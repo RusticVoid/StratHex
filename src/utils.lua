@@ -11,7 +11,7 @@ end
 
 function initGame(MapSize)
     World = world.new({tileRadius = 30, tileSpacing = 2, MapSize = MapSize})
-    Player = player.new({camSpeed = 50, world = World})
+    Player = player.new({camSpeed = 300, world = World})
     BuildMenu = buildMenu.new({world = World})
     NextPhase = nextPhase.new()
 end

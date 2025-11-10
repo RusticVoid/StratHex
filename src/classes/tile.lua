@@ -35,11 +35,19 @@ function tile:update(dt)
         self.y = self.y - self.world.tileInnerRadius
     end
 
-    if (not (self.data.building == 0)) then
-        self.data.building:update(dt)
+    if love.mouse.isDown(1) then
+        if (getDistance(mouseX, mouseY, self.x, self.y) < self.world.tileInnerRadius) then
+            self.selected = true
+            Player.selectedTile = self
+        else
+            self.selected = false
+            self:highlightNear(false)
+        end
     end
 
-                
+    if (not (self.data.building == 0)) then
+        self.data.building:update(dt)
+    end      
     if (not (self.data.unit == 0)) then
         self.data.unit:update(dt)
     end
@@ -56,16 +64,6 @@ function tile:draw()
 
     if (getDistance(mouseX, mouseY, self.x, self.y) < self.world.tileInnerRadius) then
         self:drawBorder()
-    end
-
-    if love.mouse.isDown(1) then
-        if (getDistance(mouseX, mouseY, self.x, self.y) < self.world.tileInnerRadius) then
-            self.selected = true
-            Player.selectedTile = self
-        else
-            self.selected = false
-            self:highlightNear(false)
-        end
     end
 
     if (Player.selectedTile == self) then

@@ -51,23 +51,24 @@ function love.update(dt)
         joinButton:update(dt)
     elseif (menu == "host") then
         if onlineGame == false then
-            initGame(10)
+            initGame(25)
             host = enet.host_create("localhost:6789")
             onlineGame = true
             isHost = true
             players = {}
 
-            World.tiles[1][1].data.building = building.new({type = "city", x = 1, y = 1, world = World})
-            World.tiles[1][1].data.building.base = true
-            World.tiles[1][10].data.building = building.new({type = "city", x = 10, y = 1, world = World})
-            World.tiles[1][10].data.building.team = 1
-            World.tiles[1][10].data.building.base = true
-            World.tiles[10][1].data.building = building.new({type = "city", x = 1, y = 10, world = World})
-            World.tiles[10][1].data.building.team = 2
-            World.tiles[10][1].data.building.base = true
-            World.tiles[10][10].data.building = building.new({type = "city", x = 10, y = 10, world = World})
-            World.tiles[10][10].data.building.team = 3
-            World.tiles[10][10].data.building.base = true
+            spaceFormWall = 2
+            World.tiles[spaceFormWall][spaceFormWall].data.building = building.new({type = "city", x = spaceFormWall, y = spaceFormWall, world = World})
+            World.tiles[spaceFormWall][spaceFormWall].data.building.base = true
+            World.tiles[spaceFormWall][#World.tiles-spaceFormWall].data.building = building.new({type = "city", x = #World.tiles-spaceFormWall, y = spaceFormWall, world = World})
+            World.tiles[spaceFormWall][#World.tiles-spaceFormWall].data.building.team = 1
+            World.tiles[spaceFormWall][#World.tiles-spaceFormWall].data.building.base = true
+            World.tiles[#World.tiles-spaceFormWall][spaceFormWall].data.building = building.new({type = "city", x = spaceFormWall, y = #World.tiles-spaceFormWall, world = World})
+            World.tiles[#World.tiles-spaceFormWall][spaceFormWall].data.building.team = 2
+            World.tiles[#World.tiles-spaceFormWall][spaceFormWall].data.building.base = true
+            World.tiles[#World.tiles-spaceFormWall][#World.tiles-spaceFormWall].data.building = building.new({type = "city", x = #World.tiles-spaceFormWall, y = #World.tiles-spaceFormWall, world = World})
+            World.tiles[#World.tiles-spaceFormWall][#World.tiles-spaceFormWall].data.building.team = 3
+            World.tiles[#World.tiles-spaceFormWall][#World.tiles-spaceFormWall].data.building.base = true
         end
 
         event = host:service(10)
@@ -122,7 +123,6 @@ function love.update(dt)
             end
         end
     else
-        World:update(dt)
         Player:update(dt)
         if gameLost == true then
             Player.phases[Player.currentPhase] = "done"
@@ -130,6 +130,7 @@ function love.update(dt)
             NextPhase:update(dt)
             BuildMenu:update(dt)
         end
+        World:update(dt)
 
         if (Player.phases[Player.currentPhase] == "done") then
             if onlineGame == true then
