@@ -29,9 +29,12 @@ function love.load()
     joinButton = button.new({color = {1,0,0}, font = love.graphics.newFont("fonts/DePixelKlein.ttf", 40), x = windowWidth/2, y = hostButton.height+(windowHeight/2), text = "join", code = 'menu = "join"'})
 
     selectedInput = 0
+    gamePort = "6789"
+    serverIP = "localhost:"..gamePort
+    canJoinGame = false
     inputButton = button.new({color = {1,1,1}, font = love.graphics.newFont("fonts/DePixelKlein.ttf", 40), x = windowWidth/2, y = (windowHeight/2)-23, text = "Game IP", code = 'selectedInput = inputButton inputButton.text = ""'})
-    joinGameButton = button.new({color = {1,0,0}, font = love.graphics.newFont("fonts/DePixelKlein.ttf", 40), x = windowWidth/2, y = (windowHeight/2)+23, text = "join game", code = 'print(inputButton.text)'})
-
+    joinGameButton = button.new({color = {1,0,0}, font = love.graphics.newFont("fonts/DePixelKlein.ttf", 40), x = windowWidth/2, y = (windowHeight/2)+23, text = "join game", code = 'serverIP = inputButton.text..gamePort canJoinGame = true'})
+    
     startGameButton = button.new({color = {1,0,0}, font = love.graphics.newFont("fonts/DePixelKlein.ttf", 40), x = windowWidth/2, y = 22, text = "Start Game", code = 'menu = "game" event = host:service(100) for i = 1, #players do players[i].event.peer:send("STARTING GAME:"..World.MapSize) end'})
 
     initUnits()
@@ -83,26 +86,28 @@ function love.update(dt)
         inputButton:update(dt)
         joinGameButton:update(dt)
 
-        if onlineGame == false then
-            host = enet.host_create()
-            server = host:connect("localhost:6789")
-            onlineGame = true
-        end
+        if canJoinGame == true then    
+            if onlineGame == false then
+                host = enet.host_create()
+                server = host:connect(serverIP)
+                onlineGame = true
+            end
 
-        event = host:service(10)
+            event = host:service(10)
 
-        if event then
-            if event.type == "receive" then
-                print("Got message: ", event.data, event.peer)
-                if (event.data:sub(1, 13) == "STARTING GAME") then
-                    menu = "game"
-                    initGame(tonumber(event.data:sub(15)))
+            if event then
+                if event.type == "receive" then
+                    print("Got message: ", event.data, event.peer)
+                    if (event.data:sub(1, 13) == "STARTING GAME") then
+                        menu = "game"
+                        initGame(tonumber(event.data:sub(15)))
+                    end
+                    event.peer:send( "world?" )
+                elseif event.type == "connect" then
+                    print(event.peer, "connected.")
+                elseif event.type == "disconnect" then
+                    print(event.peer, "disconnected.")
                 end
-                event.peer:send( "world?" )
-            elseif event.type == "connect" then
-                print(event.peer, "connected.")
-            elseif event.type == "disconnect" then
-                print(event.peer, "disconnected.")
             end
         end
     else
