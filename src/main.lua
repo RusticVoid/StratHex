@@ -94,21 +94,20 @@ function love.update(dt)
             onlineGame = true
         end
 
-            event = host:service(10)
+        event = host:service(10)
 
-            if event then
-                if event.type == "receive" then
-                    print("Got message: ", event.data, event.peer)
-                    if (event.data:sub(1, 13) == "STARTING GAME") then
-                        menu = "game"
-                        initGame(tonumber(event.data:sub(15)))
-                    end
-                    event.peer:send( "world?" )
-                elseif event.type == "connect" then
-                    print(event.peer, "connected.")
-                elseif event.type == "disconnect" then
-                    print(event.peer, "disconnected.")
+        if event then
+            if event.type == "receive" then
+                print("Got message: ", event.data, event.peer)
+                if (event.data:sub(1, 13) == "STARTING GAME") then
+                    menu = "game"
+                    initGame(tonumber(event.data:sub(15)))
                 end
+                event.peer:send( "world?" )
+            elseif event.type == "connect" then
+                print(event.peer, "connected.")
+            elseif event.type == "disconnect" then
+                print(event.peer, "disconnected.")
             end
         end
     else
