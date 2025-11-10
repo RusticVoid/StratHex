@@ -28,6 +28,9 @@ function love.load()
     hostButton = button.new({color = {1,0,0}, font = love.graphics.newFont("fonts/DePixelKlein.ttf", 40), x = windowWidth/2, y = windowHeight/2, text = "host", code = 'menu = "host"'})
     joinButton = button.new({color = {1,0,0}, font = love.graphics.newFont("fonts/DePixelKlein.ttf", 40), x = windowWidth/2, y = hostButton.height+(windowHeight/2), text = "join", code = 'menu = "join"'})
 
+    selectedInput = 0
+    inputButton = button.new({color = {1,1,1}, font = love.graphics.newFont("fonts/DePixelKlein.ttf", 40), x = windowWidth/2, y = windowHeight/2, text = "Game IP", code = 'selectedInput = inputButton inputButton.text = ""'})
+
     startGameButton = button.new({color = {1,0,0}, font = love.graphics.newFont("fonts/DePixelKlein.ttf", 40), x = windowWidth/2, y = 22, text = "Start Game", code = 'menu = "game" event = host:service(100) for i = 1, #players do players[i].event.peer:send("STARTING GAME:"..World.MapSize) end'})
 
     initUnits()
@@ -76,6 +79,9 @@ function love.update(dt)
         startGameButton:update(dt)
 
     elseif (menu == "join") then
+        inputButton:update(dt)
+
+
         if onlineGame == false then
             host = enet.host_create()
             server = host:connect("localhost:6789")
@@ -170,6 +176,7 @@ function love.draw()
     elseif (menu == "host") then
         startGameButton:draw()
     elseif (menu == "join") then
+        inputButton:draw()
         
     else
         World:draw()
@@ -178,5 +185,15 @@ function love.draw()
 
         love.graphics.setColor(1,1,1)
         love.graphics.print(love.timer.getFPS(), 0, font:getHeight())
+    end
+end
+
+function love.keypressed(key)
+    if (key == "backspace") then
+        selectedInput.text = selectedInput.text:sub(1, -2)
+    else
+        if (not (selectedInput == 0)) then
+            selectedInput.text = selectedInput.text..key
+        end
     end
 end

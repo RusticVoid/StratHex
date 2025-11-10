@@ -27,6 +27,10 @@ function button.new(settings)
 end
 
 function button:update(dt)
+    self.width = self.font:getWidth(self.text)
+    if self.width < 10 then
+        self.width = 10
+    end
     self.coolDown = self.coolDown - (1*dt)
     if (isMouseOver(self.x-(self.width/2), self.y-(self.height/2), self.width, self.height)) then
         self.hovered = true
