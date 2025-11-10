@@ -29,7 +29,8 @@ function love.load()
     joinButton = button.new({color = {1,0,0}, font = love.graphics.newFont("fonts/DePixelKlein.ttf", 40), x = windowWidth/2, y = hostButton.height+(windowHeight/2), text = "join", code = 'menu = "join"'})
 
     selectedInput = 0
-    inputButton = button.new({color = {1,1,1}, font = love.graphics.newFont("fonts/DePixelKlein.ttf", 40), x = windowWidth/2, y = windowHeight/2, text = "Game IP", code = 'selectedInput = inputButton inputButton.text = ""'})
+    inputButton = button.new({color = {1,1,1}, font = love.graphics.newFont("fonts/DePixelKlein.ttf", 40), x = windowWidth/2, y = (windowHeight/2)-23, text = "Game IP", code = 'selectedInput = inputButton inputButton.text = ""'})
+    joinGameButton = button.new({color = {1,0,0}, font = love.graphics.newFont("fonts/DePixelKlein.ttf", 40), x = windowWidth/2, y = (windowHeight/2)+23, text = "join game", code = 'print(inputButton.text)'})
 
     startGameButton = button.new({color = {1,0,0}, font = love.graphics.newFont("fonts/DePixelKlein.ttf", 40), x = windowWidth/2, y = 22, text = "Start Game", code = 'menu = "game" event = host:service(100) for i = 1, #players do players[i].event.peer:send("STARTING GAME:"..World.MapSize) end'})
 
@@ -80,7 +81,7 @@ function love.update(dt)
 
     elseif (menu == "join") then
         inputButton:update(dt)
-
+        joinGameButton:update(dt)
 
         if onlineGame == false then
             host = enet.host_create()
@@ -177,6 +178,7 @@ function love.draw()
         startGameButton:draw()
     elseif (menu == "join") then
         inputButton:draw()
+        joinGameButton:draw()
         
     else
         World:draw()
