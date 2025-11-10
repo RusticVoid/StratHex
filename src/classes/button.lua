@@ -19,7 +19,7 @@ function button.new(settings)
     self.code = settings.code
 
     self.defaultCoolDown = 0.5
-    self.coolDown = 0
+    self.coolDown = 0.5
 
     self.hovered = false
 

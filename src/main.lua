@@ -88,26 +88,31 @@ function love.update(dt)
         startGameButton:update(dt)
 
     elseif (menu == "join") then
-        if onlineGame == false then
-            host = enet.host_create()
-            server = host:connect("localhost:6789")
-            onlineGame = true
-        end
+        if (canJoinGame == false) then
+            inputButton:update(dt)
+            joinGameButton:update(dt)
+        else
+            if onlineGame == false then
+                host = enet.host_create()
+                server = host:connect(inputButton.text..":"..gamePort)
+                onlineGame = true
+            end
 
-        event = host:service(10)
+            event = host:service(10)
 
-        if event then
-            if event.type == "receive" then
-                print("Got message: ", event.data, event.peer)
-                if (event.data:sub(1, 13) == "STARTING GAME") then
-                    menu = "game"
-                    initGame(tonumber(event.data:sub(15)))
+            if event then
+                if event.type == "receive" then
+                    print("Got message: ", event.data, event.peer)
+                    if (event.data:sub(1, 13) == "STARTING GAME") then
+                        menu = "game"
+                        initGame(tonumber(event.data:sub(15)))
+                    end
+                    event.peer:send( "world?" )
+                elseif event.type == "connect" then
+                    print(event.peer, "connected.")
+                elseif event.type == "disconnect" then
+                    print(event.peer, "disconnected.")
                 end
-                event.peer:send( "world?" )
-            elseif event.type == "connect" then
-                print(event.peer, "connected.")
-            elseif event.type == "disconnect" then
-                print(event.peer, "disconnected.")
             end
         end
     else
@@ -188,7 +193,12 @@ function love.draw()
     elseif (menu == "host") then
         startGameButton:draw()
     elseif (menu == "join") then
-        
+        if (canJoinGame == false) then
+            inputButton:draw()
+            joinGameButton:draw()
+        else
+
+        end
     else
         World:draw()
         if gameLost == true then
