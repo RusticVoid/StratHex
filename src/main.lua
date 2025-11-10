@@ -32,8 +32,9 @@ function love.load()
     gamePort = "6789"
     serverIP = "localhost:"..gamePort
     canJoinGame = false
-    inputButton = button.new({color = {1,1,1}, font = love.graphics.newFont("fonts/DePixelKlein.ttf", 40), x = windowWidth/2, y = (windowHeight/2)-23, text = "Game IP", code = 'selectedInput = inputButton inputButton.text = ""'})
-    joinGameButton = button.new({color = {1,0,0}, font = love.graphics.newFont("fonts/DePixelKlein.ttf", 40), x = windowWidth/2, y = (windowHeight/2)+23, text = "join game", code = 'serverIP = inputButton.text..gamePort canJoinGame = true'})
+    usernameButton = button.new({color = {1,1,1}, font = love.graphics.newFont("fonts/DePixelKlein.ttf", 40), x = windowWidth/2, y = (windowHeight/2)-44, text = "Username", code = 'selectedInput = usernameButton usernameButton.text = ""'})
+    inputButton = button.new({color = {1,1,1}, font = love.graphics.newFont("fonts/DePixelKlein.ttf", 40), x = windowWidth/2, y = (windowHeight/2), text = "Game IP", code = 'selectedInput = inputButton inputButton.text = ""'})
+    joinGameButton = button.new({color = {1,0,0}, font = love.graphics.newFont("fonts/DePixelKlein.ttf", 40), x = windowWidth/2, y = (windowHeight/2)+44, text = "join game", code = 'serverIP = inputButton.text..gamePort canJoinGame = true'})
     
     startGameButton = button.new({color = {1,0,0}, font = love.graphics.newFont("fonts/DePixelKlein.ttf", 40), x = windowWidth/2, y = 22, text = "Start Game", code = 'menu = "game" event = host:service(100) for i = 1, #players do players[i].event.peer:send("STARTING GAME:"..World.MapSize) end'})
 
@@ -55,33 +56,35 @@ function love.update(dt)
             onlineGame = true
             isHost = true
             players = {}
-        end
 
-        World.tiles[1][1].data.building = building.new({type = "city", x = 1, y = 1, world = World})
-        World.tiles[1][1].data.building.base = true
-        World.tiles[1][10].data.building = building.new({type = "city", x = 10, y = 1, world = World})
-        World.tiles[1][10].data.building.team = 1
-        World.tiles[1][10].data.building.base = true
-        World.tiles[10][1].data.building = building.new({type = "city", x = 1, y = 10, world = World})
-        World.tiles[10][1].data.building.team = 2
-        World.tiles[10][1].data.building.base = true
-        World.tiles[10][10].data.building = building.new({type = "city", x = 10, y = 10, world = World})
-        World.tiles[10][10].data.building.team = 3
-        World.tiles[10][10].data.building.base = true
+            World.tiles[1][1].data.building = building.new({type = "city", x = 1, y = 1, world = World})
+            World.tiles[1][1].data.building.base = true
+            World.tiles[1][10].data.building = building.new({type = "city", x = 10, y = 1, world = World})
+            World.tiles[1][10].data.building.team = 1
+            World.tiles[1][10].data.building.base = true
+            World.tiles[10][1].data.building = building.new({type = "city", x = 1, y = 10, world = World})
+            World.tiles[10][1].data.building.team = 2
+            World.tiles[10][1].data.building.base = true
+            World.tiles[10][10].data.building = building.new({type = "city", x = 10, y = 10, world = World})
+            World.tiles[10][10].data.building.team = 3
+            World.tiles[10][10].data.building.base = true
+        end
 
         event = host:service(10)
 
         if event then
             if event.type == "receive" then
                 print("Got message: ", event.data, event.peer)
+                players[#players].name = event.data
             elseif event.type == "connect" then
                 print(event.peer, "connected.")
-                players[#players+1] = {event, done, team}
+                players[#players+1] = {event, done, team, name = 0}
                 players[#players].event = event
                 players[#players].done = false
                 players[#players].team = #players
             elseif event.type == "disconnect" then
                 print(event.peer, "disconnected.")
+                removeDisconnectedPlayer(event)
             end
         end
         
@@ -89,6 +92,7 @@ function love.update(dt)
 
     elseif (menu == "join") then
         if (canJoinGame == false) then
+            usernameButton:update(dt)
             inputButton:update(dt)
             joinGameButton:update(dt)
         else
@@ -110,8 +114,10 @@ function love.update(dt)
                     event.peer:send( "world?" )
                 elseif event.type == "connect" then
                     print(event.peer, "connected.")
+                    server:send(usernameButton.text)
                 elseif event.type == "disconnect" then
                     print(event.peer, "disconnected.")
+                    love.load()
                 end
             end
         end
@@ -179,6 +185,11 @@ function love.update(dt)
                         end
                     end
                 elseif event.type == "disconnect" then
+                    if (isHost == true) then
+                        removeDisconnectedPlayer(event)
+                    else
+                        love.load()
+                    end
                     print(event.peer, "disconnected.")
                 end
             end
@@ -192,8 +203,24 @@ function love.draw()
         joinButton:draw()
     elseif (menu == "host") then
         startGameButton:draw()
+        if onlineGame == true then
+            for i = 1, #players do
+                love.graphics.setColor(1,0,0)
+                love.graphics.setFont(font)
+                if (players[i].name == 0) then
+                    love.graphics.rectangle("fill", 0, (i-1)*font:getHeight(), font:getWidth("No Name"), font:getHeight())
+                    love.graphics.setColor(1,1,1)
+                    love.graphics.print("No Name", 0, (i-1)*font:getHeight())
+                else
+                    love.graphics.rectangle("fill", 0, (i-1)*font:getHeight(), font:getWidth(players[i].name), font:getHeight())
+                    love.graphics.setColor(1,1,1)
+                    love.graphics.print(players[i].name, 0, (i-1)*font:getHeight())
+                end
+            end
+        end
     elseif (menu == "join") then
         if (canJoinGame == false) then
+            usernameButton:draw()
             inputButton:draw()
             joinGameButton:draw()
         else
@@ -226,4 +253,19 @@ function love.keypressed(key)
             selectedInput.text = selectedInput.text..key
         end
     end
+end
+
+function love.quit()
+    if (onlineGame == true) then
+        if (isHost == true) then
+            for i = 1, #players do 
+                players[i].event.peer:disconnect()
+            end
+            host:service(10)
+        else
+            server:disconnect()
+            host:service(10)
+        end
+    end
+    return false
 end

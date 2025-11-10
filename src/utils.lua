@@ -23,6 +23,18 @@ end
 
 --NETWORKING
 
+function removeDisconnectedPlayer(event)
+    removePlayers = {}
+    for i = 1, #players do
+        if (players[i].event.peer == event.peer) then
+            removePlayers[#removePlayers + 1] = i
+        end
+    end
+    for i = 1, #removePlayers do
+        table.remove(players, removePlayers[i])
+    end
+end
+
 function checkAllPlayersDone()
     local allPlayersDone = true
     for i = 1, #players do 
