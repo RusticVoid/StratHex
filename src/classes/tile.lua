@@ -38,6 +38,8 @@ function tile:update(dt)
     if (not (self.data.building == 0)) then
         self.data.building:update(dt)
     end
+
+                
     if (not (self.data.unit == 0)) then
         self.data.unit:update(dt)
     end
@@ -79,14 +81,23 @@ function tile:draw()
                         if ((not (Player.selectedTile.data.unit == 0)) and (Player.selectedTile.data.unit.moved == false)) then
                             if (self.highlight == true) then
                                 if (Player.selectedTile.data.unit.team == Player.team) then
-                                    moveUnit(self, Player.selectedTile)
-                                    if (isHost == true) then
-                                        for i = 1, #players do
-                                            sendWorld(players[i].event)
+                                    local canMove = true
+                                    if not (self.data.unit == 0) then
+                                        if (self.data.unit.team == Player.team) then
+                                            canMove = false
                                         end
-                                    else
-                                        host:service(10)
-                                        server:send("movedUnit:"..self.girdX..":"..self.girdY..":"..Player.selectedTile.girdX..":"..Player.selectedTile.girdY..";")
+                                    end
+
+                                    if canMove == true then
+                                        moveUnit(self, Player.selectedTile)
+                                        if (isHost == true) then
+                                            for i = 1, #players do
+                                                sendWorld(players[i].event)
+                                            end
+                                        else
+                                            host:service(10)
+                                            server:send("movedUnit:"..self.girdX..":"..self.girdY..":"..Player.selectedTile.girdX..":"..Player.selectedTile.girdY..";")
+                                        end
                                     end
                                 end
                             end

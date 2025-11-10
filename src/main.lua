@@ -23,10 +23,10 @@ function love.load()
     menu = "main"
     onlineGame = false
     isHost = false
+    joinedGame = false
 
-    playButton = button.new({color = {1,0,0}, font = love.graphics.newFont("fonts/DePixelKlein.ttf", 40), x = windowWidth/2, y = (windowHeight/2)-44, text = "play", code = 'menu = "game" World = world.new({tileRadius = 30, tileSpacing = 2, MapSize = 5})'})
-    hostButton = button.new({color = {1,0,0}, font = love.graphics.newFont("fonts/DePixelKlein.ttf", 40), x = windowWidth/2, y = windowHeight/2, text = "host", code = 'menu = "host"'})
-    joinButton = button.new({color = {1,0,0}, font = love.graphics.newFont("fonts/DePixelKlein.ttf", 40), x = windowWidth/2, y = hostButton.height+(windowHeight/2), text = "join", code = 'menu = "join"'})
+    hostButton = button.new({color = {1,0,0}, font = love.graphics.newFont("fonts/DePixelKlein.ttf", 40), x = windowWidth/2, y = (windowHeight/2)-22, text = "host", code = 'menu = "host"'})
+    joinButton = button.new({color = {1,0,0}, font = love.graphics.newFont("fonts/DePixelKlein.ttf", 40), x = windowWidth/2, y = (windowHeight/2)+22, text = "join", code = 'menu = "join"'})
 
     selectedInput = 0
     gamePort = "6789"
@@ -37,6 +37,8 @@ function love.load()
     
     startGameButton = button.new({color = {1,0,0}, font = love.graphics.newFont("fonts/DePixelKlein.ttf", 40), x = windowWidth/2, y = 22, text = "Start Game", code = 'menu = "game" event = host:service(100) for i = 1, #players do players[i].event.peer:send("STARTING GAME:"..World.MapSize) end'})
 
+    gameLost = false
+
     initUnits()
 end
 
@@ -44,7 +46,6 @@ function love.update(dt)
     mouseX, mouseY = love.mouse.getPosition()
 
     if (menu == "main") then
-        playButton:update(dt)
         hostButton:update(dt)
         joinButton:update(dt)
     elseif (menu == "host") then
@@ -57,12 +58,16 @@ function love.update(dt)
         end
 
         World.tiles[1][1].data.building = building.new({type = "city", x = 1, y = 1, world = World})
+        World.tiles[1][1].data.building.base = true
         World.tiles[1][10].data.building = building.new({type = "city", x = 10, y = 1, world = World})
         World.tiles[1][10].data.building.team = 1
+        World.tiles[1][10].data.building.base = true
         World.tiles[10][1].data.building = building.new({type = "city", x = 1, y = 10, world = World})
         World.tiles[10][1].data.building.team = 2
+        World.tiles[10][1].data.building.base = true
         World.tiles[10][10].data.building = building.new({type = "city", x = 10, y = 10, world = World})
         World.tiles[10][10].data.building.team = 3
+        World.tiles[10][10].data.building.base = true
 
         event = host:service(10)
 
@@ -83,15 +88,11 @@ function love.update(dt)
         startGameButton:update(dt)
 
     elseif (menu == "join") then
-        inputButton:update(dt)
-        joinGameButton:update(dt)
-
-        if canJoinGame == true then    
-            if onlineGame == false then
-                host = enet.host_create()
-                server = host:connect(serverIP)
-                onlineGame = true
-            end
+        if onlineGame == false then
+            host = enet.host_create()
+            server = host:connect("localhost:6789")
+            onlineGame = true
+        end
 
             event = host:service(10)
 
@@ -113,7 +114,12 @@ function love.update(dt)
     else
         World:update(dt)
         Player:update(dt)
-        NextPhase:update(dt)
+        if gameLost == true then
+            Player.phases[Player.currentPhase] = "done"
+        else
+            NextPhase:update(dt)
+            BuildMenu:update(dt)
+        end
 
         if (Player.phases[Player.currentPhase] == "done") then
             if onlineGame == true then
@@ -139,6 +145,8 @@ function love.update(dt)
                             sendWorld(event)
                         elseif (event.data:sub(1, 5) == "build") then
                             decryptBuild(event)
+                        elseif (event.data:sub(1, 7) == "rmbuild") then
+                            decryptRMBuild(event)
                         elseif (event.data:sub(1, 8) == "makeUnit") then
                             decryptMakeUnit(event)
                         elseif (event.data:sub(1, 9) == "movedUnit") then
@@ -176,22 +184,28 @@ end
 
 function love.draw()
     if (menu == "main") then
-        playButton:draw()
         hostButton:draw()
         joinButton:draw()
     elseif (menu == "host") then
         startGameButton:draw()
     elseif (menu == "join") then
-        inputButton:draw()
-        joinGameButton:draw()
         
     else
         World:draw()
-        BuildMenu:draw()
-        NextPhase:draw()
+        if gameLost == true then
+            love.graphics.setColor(1,0,0)
+            love.graphics.rectangle("fill", 0, 0, font:getWidth("GAME LOST"), font:getHeight())
+            
+            love.graphics.setColor(1,1,1)
+            love.graphics.print("GAME LOST", 0, 0)
+        else
+            NextPhase:draw()
+            BuildMenu:draw()
 
-        love.graphics.setColor(1,1,1)
-        love.graphics.print(love.timer.getFPS(), 0, font:getHeight())
+            love.graphics.setColor(1,1,1)
+            love.graphics.print("Resources: "..Player.resources, 0, windowHeight-font:getHeight())
+            love.graphics.print("Energy: "..Player.energy, font:getWidth("Resources: "..Player.resources)+20, windowHeight-font:getHeight())
+        end
     end
 end
 

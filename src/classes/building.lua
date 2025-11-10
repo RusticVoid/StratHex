@@ -4,6 +4,8 @@ building.__index = building
 function building.new(settings)
     local self = setmetatable({}, building)
 
+    self.base = false
+
     self.girdX = settings.x
     self.girdY = settings.y
 
@@ -11,7 +13,10 @@ function building.new(settings)
 
     self.world = settings.world
 
-    self.color = {0,0,1,1}
+    self.team = 0
+
+    self.color = {0,1,0,1}
+
     self.x = self.girdX*((self.world.tileRadius/1.34)*self.world.tileSpacing) - self.world.tileRadius/2
     self.y = self.girdY*((self.world.tileInnerRadius)*self.world.tileSpacing)
     if (self.girdX % 2 == 0) then
@@ -19,14 +24,30 @@ function building.new(settings)
     end
 
     if (self.type == "barracks") then
-        self.color = {1,0.5,0.5}
         self.produced = false
         self.coolDown = 0
         self.maxCoolDown = 3
         self.coolDownDone = false
+
+        self.EnergyConsumption = 25
+        self.ResourceConsumption = 50
+        self.working = true
     end
 
-    self.team = 0
+    if (self.type == "power plant") then
+        self.ResourceConsumption = 20
+        self.EnergyProduction = 50
+        self.produced = false
+        self.working = true
+    end
+
+    if (self.type == "mine") then
+        self.EnergyConsumption = 15
+        self.ResourceProduction = 50
+        self.produced = false
+        self.working = true
+    end
+
 
     return self
 end
@@ -38,6 +59,65 @@ function building:update(dt)
         self.y = self.y - self.world.tileInnerRadius
     end
 
+    if (self.base == true) then
+        if ((not (World.tiles[self.girdX][self.girdY].data.unit == 0))) then
+            if (not (World.tiles[self.girdX][self.girdY].data.unit.team == Player.team)) then
+                gameLost = true
+            end
+        end
+    end
+
+    if (self.type == "mine") then
+        if (self.team == Player.team) then
+            if self.produced == false then
+                if (Player.phases[Player.currentPhase] == "move") then
+                    self.working = true
+                    self.produced = true
+                    Player.energy = Player.energy - self.EnergyConsumption
+
+                    if (Player.energy < 0) then
+                        Player.energy = Player.energy + self.EnergyConsumption
+                        self.working = false
+                    end
+
+                    if (self.working == true) then
+                        Player.resources = Player.resources + self.ResourceProduction
+                    end
+
+                end
+            else
+                if (Player.phases[Player.currentPhase] == "done") then
+                    self.produced = false
+                end
+            end
+        end
+    end
+
+    if (self.type == "power plant") then
+        if (self.team == Player.team) then
+            if self.produced == false then
+                if (Player.phases[Player.currentPhase] == "move") then
+                    self.working = true
+                    self.produced = true
+                    Player.resources = Player.resources - self.ResourceConsumption
+
+                    if (Player.resources < 0) then
+                        Player.resources = Player.resources + self.ResourceConsumption
+                        self.working = false
+                    end
+
+                    if (self.working == true) then
+                        Player.energy = Player.energy + self.EnergyProduction
+                    end
+                end
+            else
+                if (Player.phases[Player.currentPhase] == "done") then
+                    self.produced = false
+                end
+            end
+        end
+    end
+
     if (self.type == "barracks") then
         if (self.team == Player.team) then
             if self.produced == false then
@@ -45,16 +125,32 @@ function building:update(dt)
                     self.produced = true
                     self.coolDown = self.maxCoolDown
 
-                    if (self.world.tiles[self.girdY][self.girdX].data.unit == 0) then
-                        if onlineGame == true then
-                            self.world.tiles[self.girdY][self.girdX].data.unit = unit.new({type = "basic", moveSpeed = unitTypes["basic"].moveSpeed, x = self.world.tiles[self.girdY][self.girdX].girdX, y = self.world.tiles[self.girdY][self.girdX].girdY, world = World})  
-                            if (isHost == true) then 
-                                for i = 1, #players do
-                                   sendWorld(players[i].event)
+                    self.working = true
+                    Player.resources = Player.resources - self.ResourceConsumption
+                    Player.energy = Player.energy - self.EnergyConsumption
+
+                    if (Player.resources < 0) then
+                        Player.resources = Player.resources + self.ResourceConsumption
+                        self.working = false
+                    end
+
+                    if (Player.energy < 0) then
+                        Player.energy = Player.energy + self.EnergyConsumption
+                        self.working = false
+                    end
+
+                    if (self.working == true) then
+                        if (self.world.tiles[self.girdY][self.girdX].data.unit == 0) then
+                            if onlineGame == true then
+                                self.world.tiles[self.girdY][self.girdX].data.unit = unit.new({type = "basic", moveSpeed = unitTypes["basic"].moveSpeed, x = self.world.tiles[self.girdY][self.girdX].girdX, y = self.world.tiles[self.girdY][self.girdX].girdY, world = World})  
+                                if (isHost == true) then 
+                                    for i = 1, #players do
+                                    sendWorld(players[i].event)
+                                    end
+                                else
+                                    host:service(10)
+                                    server:send("makeUnit:"..self.world.tiles[self.girdY][self.girdX].girdX..":"..self.world.tiles[self.girdY][self.girdX].girdY..":".."basic"..":"..self.coolDown..":"..Player.team..";")
                                 end
-                            else
-                                host:service(10)
-                                server:send("makeUnit:"..self.world.tiles[self.girdY][self.girdX].girdX..":"..self.world.tiles[self.girdY][self.girdX].girdY..":".."basic"..":"..self.coolDown..":"..Player.team..";")
                             end
                         end
                     end
@@ -85,11 +181,29 @@ function building:update(dt)
 end
 
 function building:draw()
+    if self.team == Player.team then
+        self.color = {0.1,0.5,0.1,1}
+    else
+        self.color = {1,0,0,1}
+    end
+    
     love.graphics.setColor(self.color)
     love.graphics.circle('fill', self.x, self.y, self.world.tileInnerRadius/2)
-    
+
+    if (self.type == "mine") then
+        love.graphics.setColor(1,1,1)
+        love.graphics.print("M", self.x, self.y)
+    end
     if (self.type == "barracks") then
         love.graphics.setColor(1,1,1)
-        love.graphics.print(self.coolDown, self.x, self.y)
+        love.graphics.print("B", self.x, self.y)
+    end
+    if (self.type == "city") then
+        love.graphics.setColor(1,1,1)
+        love.graphics.print("C", self.x, self.y)
+    end
+    if (self.type == "power plant") then
+        love.graphics.setColor(1,1,1)
+        love.graphics.print("P", self.x, self.y)
     end
 end

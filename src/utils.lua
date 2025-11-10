@@ -38,6 +38,13 @@ function checkAllPlayersDone()
             players[i].done = false
         end
         Player.currentPhase = NextPhase.nextPhase
+        for y = 1, World.MapSize do
+            for x = 1, World.MapSize do
+                if (not (World.tiles[y][x].data.unit == 0)) then
+                    World.tiles[y][x].data.unit.moved = false
+                end
+            end
+        end
     end
 end
 
@@ -220,6 +227,31 @@ function decryptBuild(event)
     end
 end
 
+function decryptRMBuild(event)
+    local lookingForList = {"x", "y"}
+    local lookingFor = 1
+    local x = ""
+    local y = ""
+    for k = 9, #event.data do
+        if (event.data:sub(k, k) == ":") then
+            lookingFor = lookingFor + 1
+        elseif (event.data:sub(k, k) == ";") then
+            break
+        else
+            if (lookingForList[lookingFor] == "x") then
+                x = x..event.data:sub(k, k)
+            end
+            if (lookingForList[lookingFor] == "y") then
+                y = y..event.data:sub(k, k)
+            end
+        end
+    end
+    World.tiles[tonumber(y)][tonumber(x)].data.building = 0
+    for i = 1, #players do 
+        sendWorld(players[i].event)
+    end
+end
+
 function decryptMakeUnit(event)
     local lookingForList = {"x", "y", "unitType", "coolDown", "team"}
     local lookingFor = 1
@@ -330,6 +362,7 @@ end
 function moveUnit(newtile, tile)
     newtile.data.unit = tile.data.unit
     newtile.data.unit.moved = true
+    newtile.data.unit.turnMove = NextPhase.turn
     newtile.data.unit.girdX = newtile.girdX
     newtile.data.unit.girdY = newtile.girdY
     tile:highlightNear(false)

@@ -19,6 +19,9 @@ function player.new(settings)
     self.doneSent = false
     self.team = 0
 
+    self.resources = 500
+    self.energy = 200
+
     return self
 end
 

@@ -22,6 +22,7 @@ function unit.new(settings)
     self.moved = false
 
     self.team = 0
+    self.turnMove = 0
 
     return self
 end
@@ -34,13 +35,19 @@ function unit:update(dt)
     end
 
     if self.moved == true then
-        if (Player.phases[Player.currentPhase] == "done") then
+        if ((Player.phases[Player.currentPhase] == "done") and (not (self.turnMove == NextPhase.turn))) then
             self.moved = false
         end
     end
 end
 
 function unit:draw()
+    if self.team == Player.team then
+        self.color = {0.1,0.5,0.1,1}
+    else
+        self.color = {1,0,0,1}
+    end
+
     love.graphics.setColor(self.color)
     love.graphics.circle('fill', self.x, self.y, self.world.tileInnerRadius/3)
 
@@ -50,5 +57,5 @@ function unit:draw()
     end
 
     love.graphics.setColor(1,1,1)
-    love.graphics.print(self.team, self.x, self.y)
+    love.graphics.print("U", self.x, self.y)
 end
