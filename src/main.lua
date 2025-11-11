@@ -40,7 +40,10 @@ function love.load()
 
     gameLost = false
 
+    RecenteredAtCity = false
+
     initUnits()
+    initTileTypes()
 end
 
 function love.update(dt)
@@ -57,18 +60,13 @@ function love.update(dt)
             isHost = true
             players = {}
 
-            spaceFormWall = 2
-            World.tiles[spaceFormWall][spaceFormWall].data.building = building.new({type = "city", x = spaceFormWall, y = spaceFormWall, world = World})
-            World.tiles[spaceFormWall][spaceFormWall].data.building.base = true
-            World.tiles[spaceFormWall][#World.tiles-spaceFormWall].data.building = building.new({type = "city", x = #World.tiles-spaceFormWall, y = spaceFormWall, world = World})
-            World.tiles[spaceFormWall][#World.tiles-spaceFormWall].data.building.team = 1
-            World.tiles[spaceFormWall][#World.tiles-spaceFormWall].data.building.base = true
-            World.tiles[#World.tiles-spaceFormWall][spaceFormWall].data.building = building.new({type = "city", x = spaceFormWall, y = #World.tiles-spaceFormWall, world = World})
-            World.tiles[#World.tiles-spaceFormWall][spaceFormWall].data.building.team = 2
-            World.tiles[#World.tiles-spaceFormWall][spaceFormWall].data.building.base = true
-            World.tiles[#World.tiles-spaceFormWall][#World.tiles-spaceFormWall].data.building = building.new({type = "city", x = #World.tiles-spaceFormWall, y = #World.tiles-spaceFormWall, world = World})
-            World.tiles[#World.tiles-spaceFormWall][#World.tiles-spaceFormWall].data.building.team = 3
-            World.tiles[#World.tiles-spaceFormWall][#World.tiles-spaceFormWall].data.building.base = true
+            RandPlace = {
+                x = math.random(2, World.MapSize-2),
+                y = math.random(2, World.MapSize-2)
+            }
+            World.tiles[RandPlace.x][RandPlace.y].data.building = building.new({type = "city", x = RandPlace.x, y = RandPlace.y, world = World})
+            World.tiles[RandPlace.x][RandPlace.y].data.building.base = true
+            print(RandPlace.x, RandPlace.y)
         end
 
         event = host:service(10)
@@ -83,6 +81,15 @@ function love.update(dt)
                 players[#players].event = event
                 players[#players].done = false
                 players[#players].team = #players
+
+                RandPlace = {
+                    x = math.random(2, World.MapSize-2),
+                    y = math.random(2, World.MapSize-2)
+                }
+                World.tiles[RandPlace.x][RandPlace.y].data.building = building.new({type = "city", x = RandPlace.x, y = RandPlace.y, world = World})
+                World.tiles[RandPlace.x][RandPlace.y].data.building.team = players[#players].team
+                World.tiles[RandPlace.x][RandPlace.y].data.building.base = true
+
             elseif event.type == "disconnect" then
                 print(event.peer, "disconnected.")
                 removeDisconnectedPlayer(event)
@@ -147,6 +154,13 @@ function love.update(dt)
         end
         
         if onlineGame == true then
+            if (isHost == true) then
+                if (RecenteredAtCity == false) then
+                    recenterToCity()
+                    RecenteredAtCity = true
+                end
+            end
+
             event = host:service(10)
 
             if event then
@@ -176,6 +190,10 @@ function love.update(dt)
                     else
                         if (event.data:sub(1, 3) == "MAP") then
                             decryptWorld(event)
+                            if (RecenteredAtCity == false) then
+                                recenterToCity()
+                                RecenteredAtCity = true
+                            end
                         elseif (event.data == "allPlayersDone") then
                             if (Player.phases[Player.currentPhase] == "done") then
                                 Player.currentPhase = NextPhase.nextPhase

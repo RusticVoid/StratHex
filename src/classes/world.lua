@@ -16,7 +16,14 @@ function world.new(settings)
     for y = 1, self.MapSize do
         self.tiles[y] = {}
         for x = 1, self.MapSize do
-            self.tiles[y][x] = tile.new({x = x, y = y, world = self})
+            self.tiles[y][x] = tile.new({x = x, y = y, world = self, type = "plains"})
+            if (math.random(1, 10) == 1) then
+                if (math.random(1, 2) == 1) then
+                    self.tiles[y][x].type = "mountain"
+                else
+                    self.tiles[y][x].type = "water"
+                end
+            end
         end
     end
 

@@ -43,7 +43,7 @@ end
 
 function unit:draw()
     if self.team == Player.team then
-        self.color = {0.1,0.5,0.1,1}
+        self.color = {0,0.6,0,1}
     else
         self.color = {1,0,0,1}
     end

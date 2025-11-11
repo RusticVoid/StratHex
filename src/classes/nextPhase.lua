@@ -13,8 +13,8 @@ function nextPhase.new()
     self.width = font:getWidth(Player.phases[Player.currentPhase].."->"..Player.phases[self.nextPhase])
     self.height = font:getHeight()
 
-    self.coolDown = 0.1
-    self.maxCoolDown = 0.1
+    self.coolDown = 0.2
+    self.maxCoolDown = 0.2
 
     self.turnChange = false
     self.turn = 0

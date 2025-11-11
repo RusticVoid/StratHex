@@ -15,7 +15,7 @@ function building.new(settings)
 
     self.team = 0
 
-    self.color = {0,1,0,1}
+    self.color = {0,0.6,0,1}
 
     self.x = self.girdX*((self.world.tileRadius/1.34)*self.world.tileSpacing) - self.world.tileRadius/2
     self.y = self.girdY*((self.world.tileInnerRadius)*self.world.tileSpacing)
@@ -182,7 +182,7 @@ end
 
 function building:draw()
     if self.team == Player.team then
-        self.color = {0.1,0.5,0.1,1}
+        self.color = {0,0.6,0,1}
     else
         self.color = {1,0,0,1}
     end

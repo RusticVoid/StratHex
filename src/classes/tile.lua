@@ -4,6 +4,8 @@ tile.__index = tile
 function tile.new(settings)
     local self = setmetatable({}, tile)
 
+    self.type = settings.type
+
     self.girdX = settings.x
     self.girdY = settings.y
 
@@ -54,16 +56,15 @@ function tile:update(dt)
 end
 
 function tile:draw()
-    if (self.highlight == true) then
-        love.graphics.setColor(0,0.6,0)
-    else
-        love.graphics.setColor(self.color)
-    end
-    
+    love.graphics.setColor(tileTypes[self.type].color)
     love.graphics.circle('fill', self.x, self.y, self.world.tileRadius, 6)
 
+    if (self.highlight == true) then
+        self:drawBorder({1,1,1})
+    end
+
     if (getDistance(mouseX, mouseY, self.x, self.y) < self.world.tileInnerRadius) then
-        self:drawBorder()
+        self:drawBorder({0,1,0})
     end
 
     if (Player.selectedTile == self) then
@@ -107,7 +108,7 @@ function tile:draw()
     end
 
     if (self.selected == true) then
-        self:drawBorder()
+        self:drawBorder({0,1,0})
 
         if (not (self.data.unit == 0)) then
             self:highlightNear(true)
@@ -126,8 +127,8 @@ function tile:draw()
     end
 end
 
-function tile:drawBorder()
-    love.graphics.setColor(0,1,0)
+function tile:drawBorder(color)
+    love.graphics.setColor(color)
     love.graphics.setLineWidth(self.world.tileRadius/10)
     love.graphics.circle('line', self.x, self.y, self.world.tileRadius-(self.world.tileRadius/10), 6)
 end
@@ -141,7 +142,9 @@ function tile:highlightNear(highlight)
             if (not (self.data.unit == 0)) then
                 if (getDistance(nearX, nearY, self.x, self.y) < self.data.unit.moveSpeed*(self.world.tileRadius*self.world.tileSpacing)) then
                     if (not (self.world.tiles[y][x] == self)) then
-                        self.world.tiles[y][x].highlight = highlight
+                        if (tileTypes[self.world.tiles[y][x].type].canWalkOn == true) then
+                            self.world.tiles[y][x].highlight = highlight
+                        end
                     end
                 end
             end

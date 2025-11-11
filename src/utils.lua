@@ -21,7 +21,28 @@ function initUnits()
     unitTypes["basic"] = {moveSpeed = 1}
 end
 
---NETWORKING
+function recenterToCity()
+    for y = 1, World.MapSize do
+        for x = 1, World.MapSize do
+            if (not (World.tiles[y][x].data.building == 0)) then 
+                if (World.tiles[y][x].data.building.base == true) then
+                    if (World.tiles[y][x].data.building.team == Player.team) then
+                        World.x = (-World.tiles[y][x].data.building.x)+windowWidth/2
+                        World.y = (-World.tiles[y][x].data.building.y)+windowHeight/2
+                        return
+                    end
+                end
+            end
+        end
+    end
+end
+
+function initTileTypes()
+    tileTypes = {}
+    tileTypes["plains"] = {canWalkOn = true, color = {0.2,0.4,0.2}}
+    tileTypes["water"] = {canWalkOn = false, color = {0,0,0.5}}
+    tileTypes["mountain"] = {canWalkOn = false, color = {0.5,0.5,0.5}}
+end
 
 function removeDisconnectedPlayer(event)
     removePlayers = {}
@@ -102,7 +123,9 @@ function sendWorld(event)
                 end
             end
 
-            tileStringList = tileStringList..x..":"..y..":"..unitType..":"..unitMoved..":"..unitTeam..":"..buildingType..":"..buildingProduced..":"..buildingCooldown..":"..buildingCooldownDone..":"..buildingTeam..":"..team..";"
+            local tileType = World.tiles[y][x].type
+
+            tileStringList = tileStringList..x..":"..y..":"..tileType..":"..unitType..":"..unitMoved..":"..unitTeam..":"..buildingType..":"..buildingProduced..":"..buildingCooldown..":"..buildingCooldownDone..":"..buildingTeam..":"..team..";"
         end
     end
     event.peer:send("MAP;"..tileStringList)
@@ -120,10 +143,11 @@ function decryptWorld(event)
         end
     end
     for i = 1, #netTiles-1 do
-        local lookingForList = {"x", "y", "unitType", "unitMoved", "unitTeam", "buildingType", "buildingProduced", "buildingCooldown", "buildingCooldownDone", "buildingTeam", "team"}
+        local lookingForList = {"x", "y", "tileType", "unitType", "unitMoved", "unitTeam", "buildingType", "buildingProduced", "buildingCooldown", "buildingCooldownDone", "buildingTeam", "team"}
         local lookingFor = 1
         local x = ""
         local y = ""
+        local tileType = ""
         local unitType = ""
         local unitMoved = ""
         local unitTeam = ""
@@ -144,6 +168,9 @@ function decryptWorld(event)
                 end
                 if (lookingForList[lookingFor] == "y") then
                     y = y..netTiles[i]:sub(k, k)
+                end
+                if (lookingForList[lookingFor] == "tileType") then
+                    tileType = tileType..netTiles[i]:sub(k, k)
                 end
                 if (lookingForList[lookingFor] == "unitType") then
                     unitType = unitType..netTiles[i]:sub(k, k)
@@ -174,7 +201,7 @@ function decryptWorld(event)
                 end
             end
         end
-        World.tiles[tonumber(y)][tonumber(x)] = tile.new({x = tonumber(x), y = tonumber(y), world = World})
+        World.tiles[tonumber(y)][tonumber(x)] = tile.new({x = tonumber(x), y = tonumber(y), world = World, type = tileType})
         Player.team = tonumber(team)
         if (not (buildingType == "0")) then
             World.tiles[tonumber(y)][tonumber(x)].data.building = building.new({type = buildingType, x = tonumber(x), y = tonumber(y), world = World})
