@@ -15,3 +15,6 @@ I do plan on adding more to this game but right now I don't really have many ide
 download the code and unzip it.
 
 Run run.bat (Windows) or run.sh (Linux).
+
+## Credits
+Font used DePixelKlein.ttf by ingoFonts (Ingo Zimmermann) https://www.dafont.com/depixel.font
