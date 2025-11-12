@@ -6,8 +6,9 @@ You grow and expand your city while keeping up with your energy and resources. Y
 ## Roadmap
 - [ ] Better UI
 - [ ] Map Generation - (Currently Working On)
-  - [ ] More then 4 player support on maps
-  - [ ] Terrian (water, mountains, plains)
+  - [X] More then 4 player support on maps
+  - [X] Terrian (water, mountains, plains)
+  - [ ] Smarter Terrain
 
 I do plan on adding more to this game but right now I don't really have many ideas.
 
