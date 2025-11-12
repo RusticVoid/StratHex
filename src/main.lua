@@ -40,7 +40,7 @@ function love.load()
 
     gameLost = false
 
-    RecenteredAtCity = false
+    recenteredAtCity = false
 
     initUnits()
     initTileTypes()
@@ -64,8 +64,8 @@ function love.update(dt)
                 x = math.random(2, World.MapSize-2),
                 y = math.random(2, World.MapSize-2)
             }
-            World.tiles[RandPlace.x][RandPlace.y].data.building = building.new({type = "city", x = RandPlace.x, y = RandPlace.y, world = World})
-            World.tiles[RandPlace.x][RandPlace.y].data.building.base = true
+            World.tiles[RandPlace.y][RandPlace.x].data.building = building.new({type = "city", x = RandPlace.x, y = RandPlace.y, world = World})
+            World.tiles[RandPlace.y][RandPlace.x].data.building.base = true
             print(RandPlace.x, RandPlace.y)
         end
 
@@ -86,9 +86,9 @@ function love.update(dt)
                     x = math.random(2, World.MapSize-2),
                     y = math.random(2, World.MapSize-2)
                 }
-                World.tiles[RandPlace.x][RandPlace.y].data.building = building.new({type = "city", x = RandPlace.x, y = RandPlace.y, world = World})
-                World.tiles[RandPlace.x][RandPlace.y].data.building.team = players[#players].team
-                World.tiles[RandPlace.x][RandPlace.y].data.building.base = true
+                World.tiles[RandPlace.y][RandPlace.x].data.building = building.new({type = "city", x = RandPlace.x, y = RandPlace.y, world = World})
+                World.tiles[RandPlace.y][RandPlace.x].data.building.team = players[#players].team
+                World.tiles[RandPlace.y][RandPlace.x].data.building.base = true
 
             elseif event.type == "disconnect" then
                 print(event.peer, "disconnected.")
@@ -155,9 +155,9 @@ function love.update(dt)
         
         if onlineGame == true then
             if (isHost == true) then
-                if (RecenteredAtCity == false) then
+                if (recenteredAtCity == false) then
                     recenterToCity()
-                    RecenteredAtCity = true
+                    recenteredAtCity = true
                 end
             end
 
@@ -179,7 +179,7 @@ function love.update(dt)
                         elseif (event.data:sub(1, 14) == "updateCoolDown") then
                             decryptUpdateCoolDown(event)
                         elseif (event.data == "done") then
-                            for i = 1, #players do 
+                            for i = 1, #players do
                                 if (players[i].event.peer == event.peer) then
                                     players[i].done = true
                                     break
@@ -190,9 +190,9 @@ function love.update(dt)
                     else
                         if (event.data:sub(1, 3) == "MAP") then
                             decryptWorld(event)
-                            if (RecenteredAtCity == false) then
+                            if (recenteredAtCity == false) then
                                 recenterToCity()
-                                RecenteredAtCity = true
+                                recenteredAtCity = true
                             end
                         elseif (event.data == "allPlayersDone") then
                             if (Player.phases[Player.currentPhase] == "done") then

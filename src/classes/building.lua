@@ -186,7 +186,7 @@ function building:draw()
     else
         self.color = {1,0,0,1}
     end
-    
+
     love.graphics.setColor(self.color)
     love.graphics.circle('fill', self.x, self.y, self.world.tileInnerRadius/2)
 
