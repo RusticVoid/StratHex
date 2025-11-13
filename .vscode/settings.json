@@ -5,6 +5,7 @@
         "inject-field",
         "empty-block",
         "trailing-space",
-        "duplicate-set-field"
+        "duplicate-set-field",
+        "undefined-field"
     ]
 }

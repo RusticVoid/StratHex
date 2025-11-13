@@ -41,9 +41,9 @@ function love.load()
     gamePort = "6789"
     serverIP = "localhost:"..gamePort
     canJoinGame = false
-    usernameButton = button.new({centered = true, color = {1,1,1}, font = love.graphics.newFont("fonts/baseFont.ttf", 40), x = windowWidth/2, y = (windowHeight/2)-44, text = "Username", code = 'selectedInput = usernameButton usernameButton.text = ""'})
-    inputButton = button.new({centered = true, color = {1,1,1}, font = love.graphics.newFont("fonts/baseFont.ttf", 40), x = windowWidth/2, y = (windowHeight/2), text = "Game IP", code = 'selectedInput = inputButton inputButton.text = ""'})
-    joinGameButton = button.new({centered = true, color = {1,0,0}, font = love.graphics.newFont("fonts/baseFont.ttf", 40), x = windowWidth/2, y = (windowHeight/2)+44, text = "join game", code = 'serverIP = inputButton.text..gamePort canJoinGame = true'})
+    usernameButton = button.new({centered = true, color = {1,1,1}, font = love.graphics.newFont("fonts/baseFont.ttf", 40), x = windowWidth/2, y = (windowHeight/2)-70, text = "Username", code = 'selectedInput = usernameButton usernameButton.text = "" selectedInput:recenter()'})
+    inputButton = button.new({centered = true, color = {1,1,1}, font = love.graphics.newFont("fonts/baseFont.ttf", 40), x = windowWidth/2, y = (windowHeight/2), text = "Game IP", code = 'selectedInput = inputButton inputButton.text = "" selectedInput:recenter()'})
+    joinGameButton = button.new({centered = true, color = {1,0,0}, font = love.graphics.newFont("fonts/baseFont.ttf", 40), x = windowWidth/2, y = (windowHeight/2)+70, text = "join game", code = 'serverIP = inputButton.text..gamePort canJoinGame = true'})
 
     startGameButton = button.new({centered = true, color = {1,0,0}, font = love.graphics.newFont("fonts/baseFont.ttf", 40), x = windowWidth/2, y = 44, text = "Start Game", code = 'menu = "game" event = host:service(100) for i = 1, #players do players[i].event.peer:send("STARTING GAME:"..World.MapSize) end'})
 
@@ -58,19 +58,26 @@ end
 function love.resize()
     windowWidth, windowHeight = love.graphics.getDimensions()
 
-    if (menu == "main") then
-        titleLabel.x = (windowWidth/2)
-        titleLabel.y = 50
-        titleLabel:windowResize()
-        hostButton.y = (windowHeight/2)-44
-        joinButton.y = (windowHeight/2)+44
-    end
+    titleLabel.x = (windowWidth/2)
+    titleLabel.y = 50
+    titleLabel:windowResize()
+    hostButton.y = (windowHeight/2)-44
+    joinButton.y = (windowHeight/2)+44
 
-    if (menu == "host") then
-        startGameButton.x = windowWidth/2
-        startGameButton.y = 44
-        startGameButton:windowResize()
-    end
+    startGameButton.x = windowWidth/2
+    startGameButton.y = 44
+    startGameButton:windowResize()
+
+    usernameButton.x = windowWidth/2
+    usernameButton.y = (windowHeight/2)-70
+    usernameButton:windowResize()
+    inputButton.x = windowWidth/2
+    inputButton.y = windowHeight/2
+    inputButton:windowResize()
+    joinGameButton.x = windowWidth/2
+    joinGameButton.y = (windowHeight/2)+70
+    joinGameButton:windowResize()
+
 
     if (menu == "game") then
         BuildMenu.width = font:getWidth("building type Cost: 000 \nEnergy Consumption: 000 \nResource Consumption: 000 \nEnergy Production: 000 \nResource Production: 000")
@@ -85,7 +92,7 @@ function love.update(dt)
 
     if (menu == "main") then
         if (menuInit == false) then
-            World = world.new({tileRadius = 30, tileSpacing = 2, MapSize = 25})
+            World = world.new({tileRadius = 30, tileSpacing = 2, MapSize = 50})
             Player = player.new({camSpeed = 300, world = World})
             World.x = -50
             World.y = -50
@@ -94,7 +101,6 @@ function love.update(dt)
 
         hostButton:update(dt)
         joinButton:update(dt)
-        --Player:update(dt)
         World:update(dt)
     elseif (menu == "host") then
         if onlineGame == false then
@@ -107,7 +113,6 @@ function love.update(dt)
             RandPlace = randCityLocation()
             World.tiles[RandPlace.y][RandPlace.x].data.building = building.new({type = "city", x = RandPlace.x, y = RandPlace.y, world = World})
             World.tiles[RandPlace.y][RandPlace.x].data.building.base = true
-            print(RandPlace.x, RandPlace.y)
         end
 
         event = host:service(10)
@@ -267,11 +272,11 @@ function love.draw()
                 love.graphics.setColor(1,0,0)
                 love.graphics.setFont(font)
                 if (players[i].name == 0) then
-                    love.graphics.rectangle("fill", 0, (i-1)*font:getHeight(), font:getWidth("No Name"), font:getHeight())
+                    love.graphics.rectangle("fill", 0, (i-1)*font:getHeight(), font:getWidth("No Name"), font:getHeight(), 5)
                     love.graphics.setColor(1,1,1)
                     love.graphics.print("No Name", 0, (i-1)*font:getHeight())
                 else
-                    love.graphics.rectangle("fill", 0, (i-1)*font:getHeight(), font:getWidth(players[i].name), font:getHeight())
+                    love.graphics.rectangle("fill", 0, (i-1)*font:getHeight(), font:getWidth(players[i].name), font:getHeight(), 5)
                     love.graphics.setColor(1,1,1)
                     love.graphics.print(players[i].name, 0, (i-1)*font:getHeight())
                 end
@@ -307,12 +312,14 @@ function love.draw()
 end
 
 function love.keypressed(key)
-    if (key == "backspace") then
-        selectedInput.text = selectedInput.text:sub(1, -2)
-    else
-        if (not (selectedInput == 0)) then
+    if (not (selectedInput == 0)) then
+        if (key == "backspace") then
+            selectedInput.text = selectedInput.text:sub(1, -2)
+        else
+            selectedInput.x = windowWidth/2
             selectedInput.text = selectedInput.text..key
         end
+        selectedInput:recenter()
     end
 end
 

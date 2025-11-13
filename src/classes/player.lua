@@ -11,7 +11,6 @@ function player.new(settings)
 
     self.phases = {
         "move",
-        "attack",
         "build",
         "done"
     }

@@ -7,6 +7,9 @@ function button.new(settings)
     self.x = settings.x or 0
     self.y = settings.y or 0
 
+    self.baseX = settings.x or 0
+    self.baseY = settings.y or 0
+
     self.text = settings.text
     self.font = settings.font
     self.font:setFilter("nearest")
@@ -42,6 +45,20 @@ function button:windowResize()
     if (self.centered == true) then
         self.x = self.x-(self.width/2)
         self.y = self.y-(self.height/2)
+    end
+
+
+    self.baseX = self.x
+    self.baseY = self.y
+end
+
+function button:recenter()
+    self.width = self.font:getWidth(self.text)
+    self.height = self.font:getHeight()
+
+    if (self.centered == true) then
+        self.x = self.baseX-(self.width/2)
+        self.y = self.baseY-(self.height/2)
     end
 end
 
