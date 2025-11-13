@@ -4,7 +4,7 @@ StratHex is a multiplayer turn-based strategy game with hexagons.
 You grow and expand your city while keeping up with your energy and resources. Your goal is to grow your army and attack other players' cities.
 
 ## Roadmap
-- [ ] Better UI
+- [X] Better UI
 - [ ] Settings
 - [ ] Map Generation - (Currently Working On)
   - [X] More then 4 player support on maps
