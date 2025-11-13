@@ -35,6 +35,16 @@ function button.new(settings)
     return self
 end
 
+function button:windowResize()
+    self.width = self.font:getWidth(self.text)
+    self.height = self.font:getHeight()
+
+    if (self.centered == true) then
+        self.x = self.x-(self.width/2)
+        self.y = self.y-(self.height/2)
+    end
+end
+
 function button:update(dt)
     self.width = self.font:getWidth(self.text)
     if self.width < 10 then

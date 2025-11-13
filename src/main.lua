@@ -7,6 +7,7 @@ require "classes.buildMenu"
 require "classes.building"
 require "classes.nextPhase"
 require "classes.button"
+require "classes.label"
 
 enet = require "enet"
 
@@ -29,6 +30,11 @@ function love.load()
     isHost = false
     joinedGame = false
 
+    titleLabel = label.new({centered = true, color = {1,1,1,0.5}, font = titleFont, x = (windowWidth/2), y = 50, text = "StartHex"})
+
+    resourceLabel = label.new({color = {1,1,1,0.5}, font = font, x = 0, y = windowHeight-font:getHeight(), text = ""})
+    energyLabel = label.new({color = {1,1,1,0.5}, font = font, x = 0, y = windowHeight-font:getHeight(), text = ""})
+    
     hostButton = button.new({color = {1,1,1,0.5}, font = love.graphics.newFont("fonts/baseFont.ttf", 40), x = 10, y = (windowHeight/2)-44, text = "host", code = 'menu = "host"'})
     joinButton = button.new({color = {1,1,1,0.5}, font = love.graphics.newFont("fonts/baseFont.ttf", 40), x = 10, y = (windowHeight/2)+44, text = "join", code = 'menu = "join"'})
 
@@ -48,6 +54,31 @@ function love.load()
 
     initUnits()
     initTileTypes()
+end
+
+function love.resize()
+    windowWidth, windowHeight = love.graphics.getDimensions()
+
+    if (menu == "main") then
+        titleLabel.x = (windowWidth/2)
+        titleLabel.y = 50
+        titleLabel:windowResize()
+        hostButton.y = (windowHeight/2)-44
+        joinButton.y = (windowHeight/2)+44
+    end
+
+    if (menu == "host") then
+        startGameButton.x = windowWidth/2
+        startGameButton.y = 44
+        startGameButton:windowResize()
+    end
+
+    if (menu == "game") then
+        BuildMenu.width = font:getWidth("building type Cost: 000 \nEnergy Consumption: 000 \nResource Consumption: 000 \nEnergy Production: 000 \nResource Production: 000")
+        BuildMenu.height = windowHeight
+        BuildMenu.x = windowWidth-(BuildMenu.width)
+        BuildMenu.y = 0
+    end
 end
 
 function love.update(dt)
@@ -227,13 +258,7 @@ end
 function love.draw()
     if (menu == "main") then
         World:draw()
-
-        love.graphics.setFont(titleFont)
-        love.graphics.setColor(1,1,1,0.5)
-        love.graphics.rectangle("fill", ((windowWidth/2)-5)-((titleFont:getWidth("StartHex")+5)/2), 10-5, titleFont:getWidth("StartHex")+5, titleFont:getHeight()+5, 10)
-        love.graphics.setColor(0,0,0)
-        love.graphics.print("StartHex", ((windowWidth/2))-((titleFont:getWidth("StartHex")+5)/2), 10)
-
+        titleLabel:draw()
         hostButton:draw()
         joinButton:draw()
     elseif (menu == "host") then
@@ -273,9 +298,15 @@ function love.draw()
             NextPhase:draw()
             BuildMenu:draw()
 
-            love.graphics.setColor(1,1,1)
-            love.graphics.print("Resources: "..Player.resources, 0, windowHeight-font:getHeight())
-            love.graphics.print("Energy: "..Player.energy, font:getWidth("Resources: "..Player.resources)+20, windowHeight-font:getHeight())
+            resourceLabel.x = 0
+            resourceLabel.y = windowHeight-font:getHeight()
+            resourceLabel.text = "Resources: "..Player.resources
+            resourceLabel:draw()
+
+            energyLabel.x = font:getWidth(resourceLabel.text)+20
+            energyLabel.y = windowHeight-font:getHeight()
+            energyLabel.text = "Energy: "..Player.energy
+            resourceLabel:draw()
         end
     end
 end
