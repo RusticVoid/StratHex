@@ -45,7 +45,7 @@ function nextPhase:draw()
         self.height = font:getHeight()
 
         love.graphics.setColor(0.5,0.5,1)
-        love.graphics.rectangle("fill", self.x, self.y, self.width, self.height)
+        love.graphics.rectangle("fill", self.x, self.y, self.width, self.height, 5)
         
         love.graphics.setColor(0,0,0)
         love.graphics.print("waiting", self.x, self.y)
@@ -54,7 +54,7 @@ function nextPhase:draw()
             self.turnChange = false
         end
         love.graphics.setColor(0.5,1,0.5)
-        love.graphics.rectangle("fill", self.x, self.y, self.width, self.height)
+        love.graphics.rectangle("fill", self.x, self.y, self.width, self.height, 5)
         love.graphics.setColor(0,0,0)
         love.graphics.print(Player.phases[Player.currentPhase].."->"..Player.phases[self.nextPhase], self.x, self.y)
         if (isMouseOver(self.x, self.y, self.width, self.height)) then

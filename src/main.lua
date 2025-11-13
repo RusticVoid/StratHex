@@ -33,8 +33,7 @@ function love.load()
     titleLabel = label.new({centered = true, color = {1,1,1,0.5}, font = titleFont, x = (windowWidth/2), y = 50, text = "StartHex"})
 
     resourceLabel = label.new({color = {1,1,1,0.5}, font = font, x = 0, y = windowHeight-font:getHeight(), text = ""})
-    energyLabel = label.new({color = {1,1,1,0.5}, font = font, x = 0, y = windowHeight-font:getHeight(), text = ""})
-    
+
     hostButton = button.new({color = {1,1,1,0.5}, font = love.graphics.newFont("fonts/baseFont.ttf", 40), x = 10, y = (windowHeight/2)-44, text = "host", code = 'menu = "host"'})
     joinButton = button.new({color = {1,1,1,0.5}, font = love.graphics.newFont("fonts/baseFont.ttf", 40), x = 10, y = (windowHeight/2)+44, text = "join", code = 'menu = "join"'})
 
@@ -300,12 +299,8 @@ function love.draw()
 
             resourceLabel.x = 0
             resourceLabel.y = windowHeight-font:getHeight()
-            resourceLabel.text = "Resources: "..Player.resources
-            resourceLabel:draw()
-
-            energyLabel.x = font:getWidth(resourceLabel.text)+20
-            energyLabel.y = windowHeight-font:getHeight()
-            energyLabel.text = "Energy: "..Player.energy
+            resourceLabel.text = "Resources: "..Player.resources.."  Energy: "..Player.energy
+            resourceLabel:windowResize()
             resourceLabel:draw()
         end
     end
