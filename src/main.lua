@@ -13,30 +13,34 @@ enet = require "enet"
 function love.load()
     math.randomseed(os.clock())
 
-    font = love.graphics.newFont("fonts/DePixelKlein.ttf", 20)
+    font = love.graphics.newFont("fonts/baseFont.ttf", 17)
     font:setFilter("nearest")
     love.graphics.setFont(font)
+
+    titleFont = love.graphics.newFont("fonts/baseFont.ttf", 60)
+    titleFont:setFilter("nearest")
 
     mouseX, mouseY = love.mouse.getPosition()
     windowWidth, windowHeight = love.graphics.getDimensions()
 
     menu = "main"
+    menuInit = false
     onlineGame = false
     isHost = false
     joinedGame = false
 
-    hostButton = button.new({color = {1,0,0}, font = love.graphics.newFont("fonts/DePixelKlein.ttf", 40), x = windowWidth/2, y = (windowHeight/2)-22, text = "host", code = 'menu = "host"'})
-    joinButton = button.new({color = {1,0,0}, font = love.graphics.newFont("fonts/DePixelKlein.ttf", 40), x = windowWidth/2, y = (windowHeight/2)+22, text = "join", code = 'menu = "join"'})
+    hostButton = button.new({color = {1,1,1,0.5}, font = love.graphics.newFont("fonts/baseFont.ttf", 40), x = 10, y = (windowHeight/2)-44, text = "host", code = 'menu = "host"'})
+    joinButton = button.new({color = {1,1,1,0.5}, font = love.graphics.newFont("fonts/baseFont.ttf", 40), x = 10, y = (windowHeight/2)+44, text = "join", code = 'menu = "join"'})
 
     selectedInput = 0
     gamePort = "6789"
     serverIP = "localhost:"..gamePort
     canJoinGame = false
-    usernameButton = button.new({color = {1,1,1}, font = love.graphics.newFont("fonts/DePixelKlein.ttf", 40), x = windowWidth/2, y = (windowHeight/2)-44, text = "Username", code = 'selectedInput = usernameButton usernameButton.text = ""'})
-    inputButton = button.new({color = {1,1,1}, font = love.graphics.newFont("fonts/DePixelKlein.ttf", 40), x = windowWidth/2, y = (windowHeight/2), text = "Game IP", code = 'selectedInput = inputButton inputButton.text = ""'})
-    joinGameButton = button.new({color = {1,0,0}, font = love.graphics.newFont("fonts/DePixelKlein.ttf", 40), x = windowWidth/2, y = (windowHeight/2)+44, text = "join game", code = 'serverIP = inputButton.text..gamePort canJoinGame = true'})
-    
-    startGameButton = button.new({color = {1,0,0}, font = love.graphics.newFont("fonts/DePixelKlein.ttf", 40), x = windowWidth/2, y = 22, text = "Start Game", code = 'menu = "game" event = host:service(100) for i = 1, #players do players[i].event.peer:send("STARTING GAME:"..World.MapSize) end'})
+    usernameButton = button.new({centered = true, color = {1,1,1}, font = love.graphics.newFont("fonts/baseFont.ttf", 40), x = windowWidth/2, y = (windowHeight/2)-44, text = "Username", code = 'selectedInput = usernameButton usernameButton.text = ""'})
+    inputButton = button.new({centered = true, color = {1,1,1}, font = love.graphics.newFont("fonts/baseFont.ttf", 40), x = windowWidth/2, y = (windowHeight/2), text = "Game IP", code = 'selectedInput = inputButton inputButton.text = ""'})
+    joinGameButton = button.new({centered = true, color = {1,0,0}, font = love.graphics.newFont("fonts/baseFont.ttf", 40), x = windowWidth/2, y = (windowHeight/2)+44, text = "join game", code = 'serverIP = inputButton.text..gamePort canJoinGame = true'})
+
+    startGameButton = button.new({centered = true, color = {1,0,0}, font = love.graphics.newFont("fonts/baseFont.ttf", 40), x = windowWidth/2, y = 44, text = "Start Game", code = 'menu = "game" event = host:service(100) for i = 1, #players do players[i].event.peer:send("STARTING GAME:"..World.MapSize) end'})
 
     gameLost = false
 
@@ -50,8 +54,18 @@ function love.update(dt)
     mouseX, mouseY = love.mouse.getPosition()
 
     if (menu == "main") then
+        if (menuInit == false) then
+            World = world.new({tileRadius = 30, tileSpacing = 2, MapSize = 25})
+            Player = player.new({camSpeed = 300, world = World})
+            World.x = -50
+            World.y = -50
+            menuInit = true
+        end
+
         hostButton:update(dt)
         joinButton:update(dt)
+        --Player:update(dt)
+        World:update(dt)
     elseif (menu == "host") then
         if onlineGame == false then
             initGame(25)
@@ -59,11 +73,8 @@ function love.update(dt)
             onlineGame = true
             isHost = true
             players = {}
-
-            RandPlace = {
-                x = math.random(2, World.MapSize-2),
-                y = math.random(2, World.MapSize-2)
-            }
+            
+            RandPlace = randCityLocation()
             World.tiles[RandPlace.y][RandPlace.x].data.building = building.new({type = "city", x = RandPlace.x, y = RandPlace.y, world = World})
             World.tiles[RandPlace.y][RandPlace.x].data.building.base = true
             print(RandPlace.x, RandPlace.y)
@@ -82,10 +93,7 @@ function love.update(dt)
                 players[#players].done = false
                 players[#players].team = #players
 
-                RandPlace = {
-                    x = math.random(2, World.MapSize-2),
-                    y = math.random(2, World.MapSize-2)
-                }
+                RandPlace = randCityLocation()
                 World.tiles[RandPlace.y][RandPlace.x].data.building = building.new({type = "city", x = RandPlace.x, y = RandPlace.y, world = World})
                 World.tiles[RandPlace.y][RandPlace.x].data.building.team = players[#players].team
                 World.tiles[RandPlace.y][RandPlace.x].data.building.base = true
@@ -218,6 +226,14 @@ end
 
 function love.draw()
     if (menu == "main") then
+        World:draw()
+
+        love.graphics.setFont(titleFont)
+        love.graphics.setColor(1,1,1,0.5)
+        love.graphics.rectangle("fill", ((windowWidth/2)-5)-((titleFont:getWidth("StartHex")+5)/2), 10-5, titleFont:getWidth("StartHex")+5, titleFont:getHeight()+5, 10)
+        love.graphics.setColor(0,0,0)
+        love.graphics.print("StartHex", ((windowWidth/2))-((titleFont:getWidth("StartHex")+5)/2), 10)
+
         hostButton:draw()
         joinButton:draw()
     elseif (menu == "host") then

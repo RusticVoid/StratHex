@@ -37,6 +37,16 @@ function recenterToCity()
     end
 end
 
+function randCityLocation()
+    while true do
+        local x = math.random(2, World.MapSize-2)
+        local y = math.random(2, World.MapSize-2)
+        if (not (World.tiles[y][x].type == "plains")) then
+            return { x = math.random(2, World.MapSize-2), y = math.random(2, World.MapSize-2) }
+        end
+    end
+end
+
 function initTileTypes()
     tileTypes = {}
     tileTypes["plains"] = {canWalkOn = true, color = {0.2,0.4,0.2}}

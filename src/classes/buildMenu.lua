@@ -4,10 +4,11 @@ buildMenu.__index = buildMenu
 function buildMenu.new(settings)
     local self = setmetatable({}, buildMenu)
 
-    self.x = windowWidth-(windowWidth/2.5)
-    self.y = 0
-    self.width = windowWidth/2.5
+    
+    self.width = font:getWidth("building type Cost: 000 \nEnergy Consumption: 000 \nResource Consumption: 000 \nEnergy Production: 000 \nResource Production: 000")
     self.height = windowHeight
+    self.x = windowWidth-(self.width)
+    self.y = 0
 
     self.world = settings.world
     self.canBuild = false

@@ -2,6 +2,9 @@
     "Lua.diagnostics.disable": [
         "lowercase-global",
         "undefined-global",
-        "inject-field"
+        "inject-field",
+        "empty-block",
+        "trailing-space",
+        "duplicate-set-field"
     ]
 }

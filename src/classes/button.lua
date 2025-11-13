@@ -10,6 +10,7 @@ function button.new(settings)
     self.text = settings.text
     self.font = settings.font
     self.font:setFilter("nearest")
+    self.textSpace = 5
 
     self.width = self.font:getWidth(self.text)
     self.height = self.font:getHeight()
@@ -23,6 +24,14 @@ function button.new(settings)
 
     self.hovered = false
 
+    self.centered = settings.centered or false
+    if (self.centered == true) then
+        self.x = self.x-(self.width/2)
+        self.y = self.y-(self.height/2)
+    end
+
+    self.roundEdge = 10
+
     return self
 end
 
@@ -32,7 +41,7 @@ function button:update(dt)
         self.width = 10
     end
     self.coolDown = self.coolDown - (1*dt)
-    if (isMouseOver(self.x-(self.width/2), self.y-(self.height/2), self.width, self.height)) then
+    if (isMouseOver(self.x, self.y, self.width, self.height)) then
         self.hovered = true
         if ((love.mouse.isDown(1)) and (self.coolDown < 0)) then
             self.coolDown = self.defaultCoolDown
@@ -52,14 +61,14 @@ function button:draw()
     love.graphics.setFont(self.font)
 
     love.graphics.setColor(self.color)
-    love.graphics.rectangle("fill", self.x-(self.width/2), self.y-(self.height/2), self.width, self.height)
+    love.graphics.rectangle("fill", self.x-self.textSpace, self.y-self.textSpace, self.width+(self.textSpace*2), self.height+(self.textSpace*2), self.roundEdge)
 
     if (self.hovered == true) then
         love.graphics.setColor(1,1,1,0.5)
-        love.graphics.rectangle("fill", self.x-(self.width/2), self.y-(self.height/2), self.width, self.height)
+        love.graphics.rectangle("fill", self.x-self.textSpace, self.y-self.textSpace, self.width+(self.textSpace*2), self.height+(self.textSpace*2), self.roundEdge)
     end
 
     love.graphics.setColor(0,0,0)
-    love.graphics.print(self.text, self.x-(self.width/2), self.y-(self.height/2))
+    love.graphics.print(self.text, self.x, self.y)
 
 end
