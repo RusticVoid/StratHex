@@ -9,7 +9,7 @@ You grow and expand your city while keeping up with your energy and resources. Y
 - [ ] Map Generation - (Currently Working On)
   - [X] More then 4 player support on maps
   - [X] Terrian (water, mountains, plains)
-  - [ ] Smarter Terrain
+  - [ ] Smarter Terrain Gen
 
 I do plan on adding more to this game but right now I don't really have many ideas.
 
