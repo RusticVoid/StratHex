@@ -130,7 +130,7 @@ function love.update(dt)
     elseif (menu == "host") then
         colorSelector:update(dt)
         if onlineGame == false then
-            initGame(25)
+            initGame(10)
             host = enet.host_create("*:"..gamePort)
             onlineGame = true
             isHost = true
@@ -205,6 +205,17 @@ function love.update(dt)
         Player:update(dt)
         if gameLost == true then
             Player.phases[Player.currentPhase] = "done"
+            for y = 1, World.MapSize do
+                for x = 1, World.MapSize do
+                    if not (World.tiles[y][x].data.building == 0) then
+                        if (World.tiles[y][x].data.building.team == Player.team) then
+                            World.tiles[y][x].data.building = 0
+                            host:service(10)
+                            server:send("rmbuild:"..x..":"..y..";")
+                        end
+                    end
+                end
+            end
         else
             NextPhase:update(dt)
             BuildMenu.width = font:getWidth("building type Cost: 000 \nEnergy Consumption: 000 \nResource Consumption: 000 \nEnergy Production: 000 \nResource Production: 000")
