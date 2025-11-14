@@ -15,8 +15,8 @@ function buildMenu.new(settings)
 
     self.buildables = {
         {type = "barracks",    cost = 150, EnergyConsumption = 25, ResourceConsumption = 50,  EnergyProduction = 0,  ResourceProduction = 0},
-        {type = "city",        cost = 300, EnergyConsumption = 0,  ResourceConsumption = 0,   EnergyProduction = 0,  ResourceProduction = 0},
-        {type = "power plant", cost = 100, EnergyConsumption = 0,  ResourceConsumption = 20,  EnergyProduction = 50, ResourceProduction = 0},
+        {type = "city",        cost = 600, EnergyConsumption = 0,  ResourceConsumption = 0,   EnergyProduction = 0,  ResourceProduction = 0},
+        {type = "power plant", cost = 100, EnergyConsumption = 0,  ResourceConsumption = 20,  EnergyProduction = 25, ResourceProduction = 0},
         {type = "mine",        cost = 50,  EnergyConsumption = 15, ResourceConsumption = 0,   EnergyProduction = 0,  ResourceProduction = 50},
     }
 

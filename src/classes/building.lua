@@ -36,7 +36,7 @@ function building.new(settings)
 
     if (self.type == "power plant") then
         self.ResourceConsumption = 20
-        self.EnergyProduction = 50
+        self.EnergyProduction = 25
         self.produced = false
         self.working = true
     end
