@@ -20,6 +20,9 @@ function Steam.friends.onGameRichPresenceJoinRequested(data)
     canJoinGame = true
     menu = "join"
 
+    socket = networkingSockets.connectP2P(Steam.extra.parseUint64(data.connect), gamePort)
+    print(socket)
+
     host = enet.host_create()
     server = host:connect(data.connect)
 end
@@ -118,8 +121,7 @@ function love.update(dt)
             initGame(25)
             host = enet.host_create(nil, 32)
             Steam.gameServer.init(0, tonumber(gamePort), tonumber(gamePort), Steam.gameServer.mode.NoAuthentication, "1.1.0")
-            Steam.friends.setRichPresence('connect', "0"..gamePort)
-            Steam.friends.activateGameOverlay('friends')
+            Steam.friends.setRichPresence('connect', Steam.user.getSteamID())
             onlineGame = true
             isHost = true
             players = {}
