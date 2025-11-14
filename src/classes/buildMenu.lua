@@ -42,7 +42,9 @@ function buildMenu:update(dt)
                         if (not (self.world.tiles[y][x] == Player.selectedTile)) then
                             if (not (self.world.tiles[y][x].data.building == 0)) then
                                 if (self.world.tiles[y][x].data.building.team == Player.team) then
-                                    self.canBuild = self.world.tiles[y][x].data.building.type == "city"
+                                    if (Player.selectedTile.type == "plains") then
+                                        self.canBuild = self.world.tiles[y][x].data.building.type == "city"
+                                    end
                                 end
                                 if (self.canBuild == true) then
                                     break
