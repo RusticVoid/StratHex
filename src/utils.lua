@@ -330,8 +330,14 @@ function decryptBuild(event)
             end
         end
     end
-    World.tiles[tonumber(y)][tonumber(x)].data.building = building.new({type = buildingType, x = tonumber(x), y = tonumber(y), world = World})
-    World.tiles[tonumber(y)][tonumber(x)].data.building.team = tonumber(team)
+    if (buildingTypesData[buildingType].changeTile) then
+        if (World.tiles[tonumber(y)][tonumber(x)].type == buildingTypesData[buildingType].baseTile) then
+            World.tiles[tonumber(y)][tonumber(x)].type = buildingTypesData[buildingType].changeTile
+        end
+    else
+        World.tiles[tonumber(y)][tonumber(x)].data.building = building.new({type = buildingType, x = tonumber(x), y = tonumber(y), world = World})
+        World.tiles[tonumber(y)][tonumber(x)].data.building.team = tonumber(team)
+    end
     for i = 1, #players do 
         sendWorld(players[i].event)
     end
