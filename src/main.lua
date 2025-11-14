@@ -121,7 +121,7 @@ function love.update(dt)
             initGame(25)
             host = enet.host_create(nil, 32)
             Steam.gameServer.init(0, tonumber(gamePort), tonumber(gamePort), Steam.gameServer.mode.NoAuthentication, "1.1.0")
-            Steam.friends.setRichPresence('connect', Steam.user.getSteamID())
+            Steam.friends.setRichPresence('connect', tostring(Steam.user.getSteamID()))
             onlineGame = true
             isHost = true
             players = {}
