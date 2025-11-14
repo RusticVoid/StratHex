@@ -8,7 +8,7 @@ You grow and expand your city while keeping up with your energy and resources. Y
 - [ ] Settings
 - [ ] Building resource balancing
 - [ ] Enemy building destruction
-- [ ] When player loses all of that players buildings get destroyed
+- [ ] When player loses, all of that players buildings get destroyed
 - [ ] Map Generation
   - [X] More then 4 player support on maps
   - [X] Terrian (water, mountains, plains)
