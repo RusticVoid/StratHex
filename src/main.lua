@@ -9,24 +9,6 @@ require "classes.nextPhase"
 require "classes.button"
 require "classes.label"
 
-local windows = package.config:sub(1, 1) == '\\'
-package.cpath = string.format("%s;%s/?.%s", package.cpath, love.filesystem.getSourceBaseDirectory(), (windows and "dll" or "so"))
-
-local Steam = require 'luasteam'
-Steam.init()
-
-function Steam.friends.onGameRichPresenceJoinRequested(data)
-    onlineGame = true
-    canJoinGame = true
-    menu = "join"
-
-    socket = networkingSockets.connectP2P(Steam.extra.parseUint64(data.connect), gamePort)
-    print(socket)
-
-    host = enet.host_create()
-    server = host:connect(data.connect)
-end
-
 enet = require "enet"
 
 function love.load()
@@ -59,6 +41,7 @@ function love.load()
     gamePort = "6789"
     serverIP = "localhost:"..gamePort
     canJoinGame = false
+    usernameButton = button.new({centered = true, color = {1,1,1}, font = love.graphics.newFont("fonts/baseFont.ttf", 40), x = windowWidth/2, y = (windowHeight/2)-70, text = "Username", code = 'selectedInput = usernameButton usernameButton.text = "" selectedInput:recenter()'})
     inputButton = button.new({centered = true, color = {1,1,1}, font = love.graphics.newFont("fonts/baseFont.ttf", 40), x = windowWidth/2, y = (windowHeight/2), text = "Game IP", code = 'selectedInput = inputButton inputButton.text = "" selectedInput:recenter()'})
     joinGameButton = button.new({centered = true, color = {1,0,0}, font = love.graphics.newFont("fonts/baseFont.ttf", 40), x = windowWidth/2, y = (windowHeight/2)+70, text = "join game", code = 'serverIP = inputButton.text..gamePort canJoinGame = true'})
 
@@ -85,6 +68,9 @@ function love.resize()
     startGameButton.y = 44
     startGameButton:windowResize()
 
+    usernameButton.x = windowWidth/2
+    usernameButton.y = (windowHeight/2)-70
+    usernameButton:windowResize()
     inputButton.x = windowWidth/2
     inputButton.y = windowHeight/2
     inputButton:windowResize()
@@ -102,8 +88,8 @@ function love.resize()
 end
 
 function love.update(dt)
-    Steam.runCallbacks()
     mouseX, mouseY = love.mouse.getPosition()
+
     if (menu == "main") then
         if (menuInit == false) then
             World = world.new({tileRadius = 30, tileSpacing = 2, MapSize = 50})
@@ -119,9 +105,7 @@ function love.update(dt)
     elseif (menu == "host") then
         if onlineGame == false then
             initGame(25)
-            host = enet.host_create(nil, 32)
-            Steam.gameServer.init(0, tonumber(gamePort), tonumber(gamePort), Steam.gameServer.mode.NoAuthentication, "1.1.0")
-            Steam.friends.setRichPresence('connect', tostring(Steam.user.getSteamID()))
+            host = enet.host_create("localhost:"..gamePort)
             onlineGame = true
             isHost = true
             players = {}
@@ -159,6 +143,7 @@ function love.update(dt)
 
     elseif (menu == "join") then
         if (canJoinGame == false) then
+            usernameButton:update(dt)
             inputButton:update(dt)
             joinGameButton:update(dt)
         else
@@ -180,7 +165,7 @@ function love.update(dt)
                     event.peer:send( "world?" )
                 elseif event.type == "connect" then
                     print(event.peer, "connected.")
-                    server:send(Steam.friends.getFriendPersonaName(Steam.user.getSteamID()))
+                    server:send(usernameButton.text)
                 elseif event.type == "disconnect" then
                     print(event.peer, "disconnected.")
                     love.load()
@@ -299,6 +284,7 @@ function love.draw()
         end
     elseif (menu == "join") then
         if (canJoinGame == false) then
+            usernameButton:draw()
             inputButton:draw()
             joinGameButton:draw()
         else
@@ -349,6 +335,5 @@ function love.quit()
             host:service(10)
         end
     end
-    Steam.shutdown()
     return false
 end
