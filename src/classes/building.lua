@@ -58,15 +58,7 @@ function building:update(dt)
     if (self.girdX % 2 == 0) then
         self.y = self.y - self.world.tileInnerRadius
     end
-
-    if (self.base == true) then
-        if ((not (World.tiles[self.girdX][self.girdY].data.unit == 0))) then
-            if (not (World.tiles[self.girdX][self.girdY].data.unit.team == Player.team)) then
-                gameLost = true
-            end
-        end
-    end
-
+    
     if (self.type == "mine") then
         if (self.team == Player.team) then
             if self.produced == false then

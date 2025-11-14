@@ -82,6 +82,10 @@ function love.resize()
     startGameButton.y = 44
     startGameButton:windowResize()
 
+    colorSelector.x = windowWidth/2
+    colorSelector.y = windowHeight/2
+    colorSelector:windowResize()
+
     usernameButton.x = windowWidth/2
     usernameButton.y = (windowHeight/2)-70
     usernameButton:windowResize()
@@ -196,6 +200,10 @@ function love.update(dt)
             Player.phases[Player.currentPhase] = "done"
         else
             NextPhase:update(dt)
+            BuildMenu.width = font:getWidth("building type Cost: 000 \nEnergy Consumption: 000 \nResource Consumption: 000 \nEnergy Production: 000 \nResource Production: 000")
+            BuildMenu.height = windowHeight
+            BuildMenu.x = windowWidth-(BuildMenu.width)
+            BuildMenu.y = 0
             BuildMenu:update(dt)
         end
         World:update(dt)

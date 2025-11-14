@@ -138,24 +138,25 @@ function sendWorld(event)
             end
 
 
-            local color = 1
+            local unitColor = selectedColor
+            local buildingColor = selectedColor
             for i = 1, #players do
                 if (not (unitTeam == 0)) then
                     if (players[i].team == unitTeam) then
-                        color = players[i].color
+                        unitColor = players[i].color
                     end
                 end
                 
                 if (not (buildingTeam == 0)) then
                     if (players[i].team == buildingTeam) then
-                        color = players[i].color
+                        buildingColor = players[i].color
                     end
                 end
             end
 
             local tileType = World.tiles[y][x].type
 
-            tileStringList = tileStringList..x..":"..y..":"..color..":"..tileType..":"..unitType..":"..unitMoved..":"..unitTeam..":"..buildingType..":"..buildingIsBase..":"..buildingProduced..":"..buildingCooldown..":"..buildingCooldownDone..":"..buildingTeam..":"..team..";"
+            tileStringList = tileStringList..x..":"..y..":"..unitColor..":"..buildingColor..":"..tileType..":"..unitType..":"..unitMoved..":"..unitTeam..":"..buildingType..":"..buildingIsBase..":"..buildingProduced..":"..buildingCooldown..":"..buildingCooldownDone..":"..buildingTeam..":"..team..";"
         end
     end
     event.peer:send("MAP;"..tileStringList)
@@ -173,11 +174,12 @@ function decryptWorld(event)
         end
     end
     for i = 1, #netTiles-1 do
-        local lookingForList = {"x", "y", "color", "tileType", "unitType", "unitMoved", "unitTeam", "buildingType", "buildingIsBase", "buildingProduced", "buildingCooldown", "buildingCooldownDone", "buildingTeam", "team"}
+        local lookingForList = {"x", "y", "unitColor", "buildingColor", "tileType", "unitType", "unitMoved", "unitTeam", "buildingType", "buildingIsBase", "buildingProduced", "buildingCooldown", "buildingCooldownDone", "buildingTeam", "team"}
         local lookingFor = 1
         local x = ""
         local y = ""
-        local color = ""
+        local unitColor = ""
+        local buildingColor = ""
         local tileType = ""
         local unitType = ""
         local unitMoved = ""
@@ -201,8 +203,11 @@ function decryptWorld(event)
                 if (lookingForList[lookingFor] == "y") then
                     y = y..netTiles[i]:sub(k, k)
                 end
-                if (lookingForList[lookingFor] == "color") then
-                    color = color..netTiles[i]:sub(k, k)
+                if (lookingForList[lookingFor] == "unitColor") then
+                    unitColor = unitColor..netTiles[i]:sub(k, k)
+                end
+                if (lookingForList[lookingFor] == "buildingColor") then
+                    buildingColor = buildingColor..netTiles[i]:sub(k, k)
                 end
                 if (lookingForList[lookingFor] == "tileType") then
                     tileType = tileType..netTiles[i]:sub(k, k)
@@ -258,7 +263,7 @@ function decryptWorld(event)
                 end
             end
             World.tiles[tonumber(y)][tonumber(x)].data.building.team = tonumber(buildingTeam)
-            World.tiles[tonumber(y)][tonumber(x)].data.building.color = playerColors[tonumber(color)]
+            World.tiles[tonumber(y)][tonumber(x)].data.building.color = playerColors[tonumber(buildingColor)]
         end
         if (not (unitType == "0")) then
             World.tiles[tonumber(y)][tonumber(x)].data.unit = unit.new({type = unitType, moveSpeed = unitTypes[unitType].moveSpeed, x = tonumber(x), y = tonumber(y), world = World})
@@ -268,7 +273,7 @@ function decryptWorld(event)
                 World.tiles[tonumber(y)][tonumber(x)].data.unit.moved = false
             end
             World.tiles[tonumber(y)][tonumber(x)].data.unit.team = tonumber(unitTeam)
-            World.tiles[tonumber(y)][tonumber(x)].data.unit.color = playerColors[tonumber(color)]
+            World.tiles[tonumber(y)][tonumber(x)].data.unit.color = playerColors[tonumber(unitColor)]
         end
     end
 end
