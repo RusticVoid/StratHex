@@ -58,6 +58,45 @@ function building:update(dt)
     if (self.girdX % 2 == 0) then
         self.y = self.y - self.world.tileInnerRadius
     end
+
+
+    if (self.EnergyProduction) then
+        if (self.type == "barracks") then
+            if (self.coolDown == 1) then
+                Player.energyNextTurn = Player.energyNextTurn + self.EnergyProduction  
+            end
+        else
+            Player.energyNextTurn = Player.energyNextTurn + self.EnergyProduction
+        end
+    end
+    if (self.EnergyConsumption) then
+        if (self.type == "barracks") then
+            if (self.coolDown == 1) then
+                Player.energyNextTurn = Player.energyNextTurn - self.EnergyConsumption
+            end
+        else
+            Player.energyNextTurn = Player.energyNextTurn - self.EnergyConsumption
+        end
+    end
+
+    if (self.ResourceProduction) then
+        if (self.type == "barracks") then
+            if (self.coolDown == 1) then
+                Player.resourcesNextTurn = Player.resourcesNextTurn + self.ResourceProduction
+            end
+        else
+            Player.resourcesNextTurn = Player.resourcesNextTurn + self.ResourceProduction
+        end
+    end
+    if (self.ResourceConsumption) then
+        if (self.type == "barracks") then
+            if (self.coolDown == 1) then
+                Player.resourcesNextTurn = Player.resourcesNextTurn - self.ResourceConsumption
+            end
+        else
+            Player.resourcesNextTurn = Player.resourcesNextTurn - self.ResourceConsumption
+        end
+    end
     
     if (self.type == "city") then
         if (self.base == true) then
@@ -205,6 +244,15 @@ function building:draw()
         love.graphics.print("M", self.x, self.y)
     end
     if (self.type == "barracks") then
+        love.graphics.setColor(self.color[1]-0.2,self.color[2]-0.2,self.color[3]-0.2)
+        local coolDownArc = 0
+        if self.coolDown == 2 then
+            coolDownArc = math.pi
+        end
+        if self.coolDown == 1 then
+            coolDownArc = 2*math.pi
+        end
+        love.graphics.arc("fill", self.x, self.y, self.world.tileInnerRadius/2, math.pi/2, coolDownArc+math.pi/2)
         love.graphics.setColor(1,1,1)
         love.graphics.print("B", self.x, self.y)
     end

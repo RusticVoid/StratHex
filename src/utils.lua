@@ -47,6 +47,9 @@ function initTileTypes()
     tileTypes["plains"] = {canWalkOn = true, color = {0.2,0.4,0.2}}
     tileTypes["water"] = {canWalkOn = false, color = {0,0,0.5}}
     tileTypes["mountain"] = {canWalkOn = false, color = {0.5,0.5,0.5}}
+
+    tileTypes["waterBridge"] = {canWalkOn = true, color = {0.5, 0.2, 0}}
+    tileTypes["mountainTunnel"] = {canWalkOn = true, color = {0.3,0.3,0.3}}
 end
 
 function initBuildingTypes()
@@ -58,10 +61,17 @@ function initBuildingTypes()
     }
 
     buildingTypesData = {}
-    buildingTypesData["barracks"] =    {type = "barracks",    cost = 150, EnergyConsumption = 25, ResourceConsumption = 50,  EnergyProduction = 0,  ResourceProduction = 0}
-    buildingTypesData["city"] =        {type = "city",        cost = 600, EnergyConsumption = 0,  ResourceConsumption = 0,   EnergyProduction = 0,  ResourceProduction = 0}
-    buildingTypesData["power plant"] = {type = "power plant", cost = 100, EnergyConsumption = 0,  ResourceConsumption = 20,  EnergyProduction = 25, ResourceProduction = 0}
-    buildingTypesData["mine"] =        {type = "mine",        cost = 50,  EnergyConsumption = 15, ResourceConsumption = 0,   EnergyProduction = 0,  ResourceProduction = 50}
+    buildingTypesData["barracks"] =    {type = "barracks",    cost = 25, EnergyConsumption = 25, ResourceConsumption = 25,  EnergyProduction = 0,  ResourceProduction = 0}
+    buildingTypesData["city"] =        {type = "city",        cost = 150, EnergyConsumption = 0,  ResourceConsumption = 0,   EnergyProduction = 0,  ResourceProduction = 0}
+    buildingTypesData["power plant"] = {type = "power plant", cost = 15, EnergyConsumption = 0,  ResourceConsumption = 5,  EnergyProduction = 10, ResourceProduction = 0}
+    buildingTypesData["mine"] =        {type = "mine",        cost = 10,  EnergyConsumption = 5, ResourceConsumption = 0,   EnergyProduction = 0,  ResourceProduction = 10}
+
+    terraformTypes = {
+        "bridge",
+        "tunnel",
+    }
+    buildingTypesData["bridge"] = {type = "bridge", cost = 15, baseTile = "water", changeTile = "waterBridge"}
+    buildingTypesData["tunnel"] = {type = "tunnel", cost = 25, baseTile = "mountain", changeTile = "mountainTunnel"}
 end
 
 function initUnits()

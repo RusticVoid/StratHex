@@ -18,14 +18,19 @@ function player.new(settings)
     self.doneSent = false
     self.team = 0
 
-    self.resources = 500
+    self.resources = 200
     self.energy = 200
+
+    self.energyNextTurn = 0
+    self.resourcesNextTurn = 0
 
     return self
 end
 
 function player:update(dt)
     self:input(dt)
+    self.energyNextTurn = 0
+    self.resourcesNextTurn = 0
 end
 
 function player:draw()

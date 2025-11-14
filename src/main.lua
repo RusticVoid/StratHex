@@ -11,6 +11,12 @@ require "classes.label"
 
 enet = require "enet"
 
+-- Notes
+-- Added barracks cooldown indicator
+-- Added next turn resource preview
+-- Added bridges and tunnels
+-- Rebalance building resources
+
 function love.load()
     math.randomseed(os.clock())
 
@@ -332,7 +338,7 @@ function love.draw()
 
             resourceLabel.x = 0
             resourceLabel.y = windowHeight-font:getHeight()
-            resourceLabel.text = "Resources: "..Player.resources.."  Energy: "..Player.energy
+            resourceLabel.text = "Resources: "..Player.resources.."+"..Player.resourcesNextTurn.."  Energy: "..Player.energy.."+"..Player.energyNextTurn
             resourceLabel:windowResize()
             resourceLabel:draw()
         end
