@@ -15,6 +15,7 @@ enet = require "enet"
 -- Added barracks cooldown indicator
 -- Added next turn resource preview
 -- Added bridges and tunnels
+-- Added players buildings destruct after losing
 -- Rebalance building resources
 
 function love.load()
