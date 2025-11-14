@@ -57,7 +57,7 @@ function love.load()
 
     selectedColor = 1
 
-    colorSelector = button.new({centered = true, color = {1,0,0}, font = love.graphics.newFont("fonts/baseFont.ttf", 40), x = windowWidth/2, y = windowHeight/2, text = "Color", code = 'selectedColor = selectedColor + 1 if (selectedColor > #playerColors) then selectedColor = 1 end colorSelector.color = playerColors[selectedColor] host:service(10) server:send(usernameButton.text..":"..selectedColor..";")'})
+    colorSelector = button.new({centered = true, color = {1,0,0}, font = love.graphics.newFont("fonts/baseFont.ttf", 40), x = windowWidth/2, y = windowHeight/2, text = "Color", code = 'selectedColor = selectedColor + 1 if (selectedColor > #playerColors) then selectedColor = 1 end colorSelector.color = playerColors[selectedColor] if ( not (isHost)) then host:service(10) server:send(usernameButton.text..":"..selectedColor..";") end'})
 
     startGameButton = button.new({centered = true, color = {1,0,0}, font = love.graphics.newFont("fonts/baseFont.ttf", 40), x = windowWidth/2, y = 44, text = "Start Game", code = 'menu = "game" event = host:service(100) for i = 1, #players do players[i].event.peer:send("STARTING GAME:"..World.MapSize) end'})
 
@@ -117,6 +117,7 @@ function love.update(dt)
         joinButton:update(dt)
         World:update(dt)
     elseif (menu == "host") then
+        colorSelector:update(dt)
         if onlineGame == false then
             initGame(25)
             host = enet.host_create("*:"..gamePort)
@@ -297,6 +298,7 @@ function love.draw()
                 end
             end
         end
+        colorSelector:draw()
     elseif (menu == "join") then
         if (canJoinGame == false) then
             usernameButton:draw()
