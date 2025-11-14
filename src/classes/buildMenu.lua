@@ -116,10 +116,12 @@ function buildMenu:update(dt)
             end
         else
             if ((not (Player.selectedTile == 0)) and (Player.selectedTile.data.building.base == false) and (Player.selectedTile.data.building.team == Player.team)) then
+                self.coolDown = self.coolDown - (1*dt)
                 if (isMouseOver(self.x+4, 2, self.width-8, (self.height)-4)) then
                     if (love.mouse.isDown(1) and (self.coolDown < 0)) then
+                        print("test")
                         self.coolDown = self.maxCoolDown
-                        Player.selectedTile.data.building = 0
+                        World.tiles[Player.selectedTile.girdY][Player.selectedTile.girdX].data.building = 0
                         if (isHost == true) then
                             for i = 1, #players do
                                 sendWorld(players[i].event)
