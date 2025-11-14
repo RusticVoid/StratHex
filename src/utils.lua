@@ -47,8 +47,9 @@ function initTileTypes()
     tileTypes["plains"] = {canWalkOn = true, color = {0.2,0.4,0.2}}
     tileTypes["water"] = {canWalkOn = false, color = {0,0,0.5}}
     tileTypes["mountain"] = {canWalkOn = false, color = {0.5,0.5,0.5}}
+    tileTypes["sand"] = {canWalkOn = false, color = {0.7,0.7,0.2}}
 
-    tileTypes["waterBridge"] = {canWalkOn = true, color = {0.5, 0.2, 0}}
+    tileTypes["waterBridge"] = {canWalkOn = true, color = {0.5,0.2,0}}
     tileTypes["mountainTunnel"] = {canWalkOn = true, color = {0.3,0.3,0.3}}
 end
 

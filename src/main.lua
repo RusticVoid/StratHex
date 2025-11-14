@@ -12,6 +12,8 @@ require "classes.label"
 enet = require "enet"
 
 -- Notes
+-- Added rivers
+-- Added sand tiles
 -- Added barracks cooldown indicator
 -- Added next turn resource preview
 -- Added bridges and tunnels
@@ -131,7 +133,7 @@ function love.update(dt)
     elseif (menu == "host") then
         colorSelector:update(dt)
         if onlineGame == false then
-            initGame(10)
+            initGame(25)
             host = enet.host_create("*:"..gamePort)
             onlineGame = true
             isHost = true
