@@ -105,7 +105,7 @@ function love.update(dt)
     elseif (menu == "host") then
         if onlineGame == false then
             initGame(25)
-            host = enet.host_create("localhost:"..gamePort)
+            host = enet.host_create("*:"..gamePort)
             onlineGame = true
             isHost = true
             players = {}
