@@ -356,6 +356,14 @@ function decryptUserData(event)
             end
         end
     end
+
+    for i = 1, #players do
+        if (players[i].name == username) then
+            players[i].color = tonumber(color)
+            return
+        end
+    end
+
     players[#players].name = username
     players[#players].color = tonumber(color)
 end

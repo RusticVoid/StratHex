@@ -57,7 +57,7 @@ function love.load()
 
     selectedColor = 1
 
-    colorSelector = button.new({centered = true, color = {1,0,0}, font = love.graphics.newFont("fonts/baseFont.ttf", 40), x = windowWidth/2, y = windowHeight/2, text = "Color", code = 'selectedColor = selectedColor + 1 if (selectedColor > #playerColors) then selectedColor = 1 end colorSelector.color = playerColors[selectedColor] if ( not (isHost)) then host:service(10) server:send(usernameButton.text..":"..selectedColor..";") end'})
+    colorSelector = button.new({centered = true, color = {1,0,0}, font = love.graphics.newFont("fonts/baseFont.ttf", 40), x = windowWidth/2, y = windowHeight/2, text = "Color", code = 'selectedColor = selectedColor + 1 if (selectedColor > #playerColors) then selectedColor = 1 end colorSelector.color = playerColors[selectedColor] if (not (isHost)) then host:service(10) server:send(usernameButton.text..":"..selectedColor..";") end'})
 
     startGameButton = button.new({centered = true, color = {1,0,0}, font = love.graphics.newFont("fonts/baseFont.ttf", 40), x = windowWidth/2, y = 44, text = "Start Game", code = 'menu = "game" event = host:service(100) for i = 1, #players do players[i].event.peer:send("STARTING GAME:"..World.MapSize) end'})
 
