@@ -45,6 +45,20 @@ function love.load()
     inputButton = button.new({centered = true, color = {1,1,1}, font = love.graphics.newFont("fonts/baseFont.ttf", 40), x = windowWidth/2, y = (windowHeight/2), text = "Game IP", code = 'selectedInput = inputButton inputButton.text = "" selectedInput:recenter()'})
     joinGameButton = button.new({centered = true, color = {1,0,0}, font = love.graphics.newFont("fonts/baseFont.ttf", 40), x = windowWidth/2, y = (windowHeight/2)+70, text = "join game", code = 'serverIP = inputButton.text..gamePort canJoinGame = true'})
 
+    playerColors = {
+        {1,0.2,0.2}, --red
+        {0.2,1,0.2}, --green
+        {0.2,0.2,1}, --blue
+        {1,1,1},     --white
+        {0.5,0.2,1}, --purple
+        {1,1,0.2},   --yellow
+        {1,0.5,0.2}, --orange
+    }
+
+    selectedColor = 1
+
+    colorSelector = button.new({centered = true, color = {1,0,0}, font = love.graphics.newFont("fonts/baseFont.ttf", 40), x = windowWidth/2, y = windowHeight/2, text = "Color", code = 'selectedColor = selectedColor + 1 if (selectedColor > #playerColors) then selectedColor = 1 end colorSelector.color = playerColors[selectedColor] host:service(10) server:send(usernameButton.text..":"..selectedColor..";")'})
+
     startGameButton = button.new({centered = true, color = {1,0,0}, font = love.graphics.newFont("fonts/baseFont.ttf", 40), x = windowWidth/2, y = 44, text = "Start Game", code = 'menu = "game" event = host:service(100) for i = 1, #players do players[i].event.peer:send("STARTING GAME:"..World.MapSize) end'})
 
     gameLost = false
@@ -120,10 +134,10 @@ function love.update(dt)
         if event then
             if event.type == "receive" then
                 print("Got message: ", event.data, event.peer)
-                players[#players].name = event.data
+                decryptUserData(event)
             elseif event.type == "connect" then
                 print(event.peer, "connected.")
-                players[#players+1] = {event, done, team, name = 0}
+                players[#players+1] = {event, done, team, name = 0, color = {}, basex, basey}
                 players[#players].event = event
                 players[#players].done = false
                 players[#players].team = #players
@@ -132,6 +146,8 @@ function love.update(dt)
                 World.tiles[RandPlace.y][RandPlace.x].data.building = building.new({type = "city", x = RandPlace.x, y = RandPlace.y, world = World})
                 World.tiles[RandPlace.y][RandPlace.x].data.building.team = players[#players].team
                 World.tiles[RandPlace.y][RandPlace.x].data.building.base = true
+                players[#players].basex = RandPlace.x
+                players[#players].basey = RandPlace.y
 
             elseif event.type == "disconnect" then
                 print(event.peer, "disconnected.")
@@ -147,6 +163,7 @@ function love.update(dt)
             inputButton:update(dt)
             joinGameButton:update(dt)
         else
+            colorSelector:update(dt)
             if onlineGame == false then
                 host = enet.host_create()
                 server = host:connect(inputButton.text..":"..gamePort)
@@ -165,7 +182,7 @@ function love.update(dt)
                     event.peer:send( "world?" )
                 elseif event.type == "connect" then
                     print(event.peer, "connected.")
-                    server:send(usernameButton.text)
+                    server:send(usernameButton.text..":"..selectedColor..";")
                 elseif event.type == "disconnect" then
                     print(event.peer, "disconnected.")
                     love.load()
@@ -199,8 +216,8 @@ function love.update(dt)
         if onlineGame == true then
             if (isHost == true) then
                 if (recenteredAtCity == false) then
-                    recenterToCity()
                     recenteredAtCity = true
+                    recenterToCity()
                 end
             end
 
@@ -233,10 +250,7 @@ function love.update(dt)
                     else
                         if (event.data:sub(1, 3) == "MAP") then
                             decryptWorld(event)
-                            if (recenteredAtCity == false) then
-                                recenterToCity()
-                                recenteredAtCity = true
-                            end
+                            World:update(dt)
                         elseif (event.data == "allPlayersDone") then
                             if (Player.phases[Player.currentPhase] == "done") then
                                 Player.currentPhase = NextPhase.nextPhase
@@ -269,15 +283,16 @@ function love.draw()
         startGameButton:draw()
         if onlineGame == true then
             for i = 1, #players do
-                love.graphics.setColor(1,0,0)
                 love.graphics.setFont(font)
                 if (players[i].name == 0) then
+                    love.graphics.setColor(1,0,0)
                     love.graphics.rectangle("fill", 0, (i-1)*font:getHeight(), font:getWidth("No Name"), font:getHeight(), 5)
                     love.graphics.setColor(1,1,1)
                     love.graphics.print("No Name", 0, (i-1)*font:getHeight())
                 else
+                    love.graphics.setColor(playerColors[players[i].color])
                     love.graphics.rectangle("fill", 0, (i-1)*font:getHeight(), font:getWidth(players[i].name), font:getHeight(), 5)
-                    love.graphics.setColor(1,1,1)
+                    love.graphics.setColor(0,0,0)
                     love.graphics.print(players[i].name, 0, (i-1)*font:getHeight())
                 end
             end
@@ -288,7 +303,9 @@ function love.draw()
             inputButton:draw()
             joinGameButton:draw()
         else
-
+            love.graphics.setColor(1,1,1)
+            love.graphics.print("NOW IN GAME")
+            colorSelector:draw()
         end
     else
         World:draw()
@@ -312,6 +329,12 @@ function love.draw()
 end
 
 function love.keypressed(key)
+    if (key == "c") then
+        if (menu == "game") then
+            recenterToCity()
+        end
+    end
+
     if (not (selectedInput == 0)) then
         if (key == "backspace") then
             selectedInput.text = selectedInput.text:sub(1, -2)

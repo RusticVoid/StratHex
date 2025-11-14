@@ -15,7 +15,7 @@ function building.new(settings)
 
     self.team = 0
 
-    self.color = {0,0.6,0,1}
+    self.color = playerColors[selectedColor]
 
     self.x = self.girdX*((self.world.tileRadius/1.34)*self.world.tileSpacing) - self.world.tileRadius/2
     self.y = self.girdY*((self.world.tileInnerRadius)*self.world.tileSpacing)
@@ -181,10 +181,16 @@ function building:update(dt)
 end
 
 function building:draw()
+    if (isHost == true) then
+        for i = 1, #players do
+            if (players[i].team == self.team) then
+                self.color = playerColors[players[i].color]
+            end
+        end
+    end
+    
     if self.team == Player.team then
-        self.color = {0,0.6,0,1}
-    else
-        self.color = {1,0,0,1}
+        self.color = playerColors[selectedColor]
     end
 
     love.graphics.setColor(self.color)

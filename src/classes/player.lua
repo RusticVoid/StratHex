@@ -7,7 +7,7 @@ function player.new(settings)
     self.selectedTile = 0
     self.world = settings.world
     self.camSpeed = settings.camSpeed
-    self.currentPhase = 3
+    self.currentPhase = 1
 
     self.phases = {
         "move",

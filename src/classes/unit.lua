@@ -11,7 +11,8 @@ function unit.new(settings)
 
     self.type = settings.type
 
-    self.color = {1,0,0,1}
+    self.color = playerColors[selectedColor]
+    
     self.x = self.girdX*((self.world.tileRadius/1.34)*self.world.tileSpacing) - self.world.tileRadius/2
     self.y = self.girdY*((self.world.tileInnerRadius)*self.world.tileSpacing)
     if (self.girdX % 2 == 0) then
@@ -42,13 +43,15 @@ function unit:update(dt)
 end
 
 function unit:draw()
-    if self.team == Player.team then
-        self.color = {0,0.6,0,1}
-    else
-        self.color = {1,0,0,1}
+    if (isHost == true) then
+        for i = 1, #players do
+            if (players[i].team == self.team) then
+                self.color = playerColors[players[i].color]
+            end
+        end
     end
 
-    love.graphics.setColor(self.color)
+    love.graphics.setColor({self.color[1]-0.2, self.color[2]-0.2, self.color[3]-0.2})
     love.graphics.circle('fill', self.x, self.y, self.world.tileInnerRadius/3)
 
     if (self.moved == false) then
