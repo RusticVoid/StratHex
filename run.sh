@@ -1,2 +1,2 @@
 #!/bin/sh
-./libs/Linux/love.AppImage ./src/
+./libs/Linux/AppRun ./src/
