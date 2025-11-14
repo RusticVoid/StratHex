@@ -16,11 +16,6 @@ function initGame(MapSize)
     NextPhase = nextPhase.new()
 end
 
-function initUnits()
-    unitTypes = {}
-    unitTypes["basic"] = {moveSpeed = 1}
-end
-
 function recenterToCity()
     for y = 1, World.MapSize do
         for x = 1, World.MapSize do
@@ -52,6 +47,26 @@ function initTileTypes()
     tileTypes["plains"] = {canWalkOn = true, color = {0.2,0.4,0.2}}
     tileTypes["water"] = {canWalkOn = false, color = {0,0,0.5}}
     tileTypes["mountain"] = {canWalkOn = false, color = {0.5,0.5,0.5}}
+end
+
+function initBuildingTypes()
+    buildingTypes = {
+        "barracks",
+        "city",
+        "power plant",
+        "mine",
+    }
+
+    buildingTypesData = {}
+    buildingTypesData["barracks"] =    {type = "barracks",    cost = 150, EnergyConsumption = 25, ResourceConsumption = 50,  EnergyProduction = 0,  ResourceProduction = 0}
+    buildingTypesData["city"] =        {type = "city",        cost = 600, EnergyConsumption = 0,  ResourceConsumption = 0,   EnergyProduction = 0,  ResourceProduction = 0}
+    buildingTypesData["power plant"] = {type = "power plant", cost = 100, EnergyConsumption = 0,  ResourceConsumption = 20,  EnergyProduction = 25, ResourceProduction = 0}
+    buildingTypesData["mine"] =        {type = "mine",        cost = 50,  EnergyConsumption = 15, ResourceConsumption = 0,   EnergyProduction = 0,  ResourceProduction = 50}
+end
+
+function initUnits()
+    unitTypes = {}
+    unitTypes["basic"] = {moveSpeed = 1}
 end
 
 function removeDisconnectedPlayer(event)

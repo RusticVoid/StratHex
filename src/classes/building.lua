@@ -29,21 +29,21 @@ function building.new(settings)
         self.maxCoolDown = 3
         self.coolDownDone = false
 
-        self.EnergyConsumption = 25
-        self.ResourceConsumption = 50
+        self.EnergyConsumption = buildingTypesData[self.type].EnergyConsumption
+        self.ResourceConsumption = buildingTypesData[self.type].ResourceConsumption
         self.working = true
     end
 
     if (self.type == "power plant") then
-        self.ResourceConsumption = 20
-        self.EnergyProduction = 25
+        self.ResourceConsumption = buildingTypesData[self.type].ResourceConsumption
+        self.EnergyProduction = buildingTypesData[self.type].EnergyProduction
         self.produced = false
         self.working = true
     end
 
     if (self.type == "mine") then
-        self.EnergyConsumption = 15
-        self.ResourceProduction = 50
+        self.EnergyConsumption = buildingTypesData[self.type].EnergyConsumption
+        self.ResourceProduction = buildingTypesData[self.type].ResourceProduction
         self.produced = false
         self.working = true
     end
