@@ -11,9 +11,12 @@ require "classes.label"
 
 enet = require "enet"
 
--- Notes
+-- Notes:
 -- power plants energy production now lowered to 25
 -- city now cost 600 resources
+
+-- TODO:
+-- Add building types
 
 function love.load()
     math.randomseed(os.clock())
