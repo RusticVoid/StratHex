@@ -21,7 +21,7 @@ function Steam.friends.onGameRichPresenceJoinRequested(data)
     menu = "join"
 
     host = enet.host_create()
-    server = host:connect(data)
+    server = host:connect(data.connect)
 end
 
 enet = require "enet"
