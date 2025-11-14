@@ -38,7 +38,7 @@ function love.load()
     joinButton = button.new({color = {1,1,1,0.5}, font = love.graphics.newFont("fonts/baseFont.ttf", 40), x = 10, y = (windowHeight/2)+44, text = "join", code = 'menu = "join"'})
 
     selectedInput = 0
-    gamePort = "6789"
+    gamePort = "25565"
     serverIP = "localhost:"..gamePort
     canJoinGame = false
     usernameButton = button.new({centered = true, color = {1,1,1}, font = love.graphics.newFont("fonts/baseFont.ttf", 40), x = windowWidth/2, y = (windowHeight/2)-70, text = "Username", code = 'selectedInput = usernameButton usernameButton.text = "" selectedInput:recenter()'})
