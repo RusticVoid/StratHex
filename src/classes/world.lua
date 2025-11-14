@@ -27,18 +27,16 @@ function world.new(settings)
         end
     end
 
-
-    
     riverAmount = 10
-    for i = 0, riverAmount do    
+    for i = 0, riverAmount do
         local riverLength = 10
-        local riverSize = 1
         local riverX = math.random(1, self.MapSize)*((self.tileRadius/1.34)*self.tileSpacing) - self.tileRadius/2
         local riverY = math.random(1, self.MapSize)*((self.tileInnerRadius)*self.tileSpacing)
         local dx = math.random(-1, 1)
         local dy = math.random(-1, 1)
         for i = 1, riverLength do
-            if (math.random (1, 10) == 1) then
+            local riverSize = math.random(3, 10)/10
+            if (math.random (1, 15) == 1) then
                 dx = math.random(-1, 1)
                 dy = math.random(-1, 1)
             end

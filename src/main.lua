@@ -12,7 +12,7 @@ require "classes.label"
 enet = require "enet"
 
 -- Notes
--- Added rivers
+-- Added rivers/lakes
 -- Added sand tiles
 -- Added barracks cooldown indicator
 -- Added next turn resource preview
