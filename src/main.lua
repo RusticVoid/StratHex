@@ -12,13 +12,11 @@ require "classes.label"
 enet = require "enet"
 
 -- Notes
--- Added rivers/lakes
--- Added sand tiles
--- Added barracks cooldown indicator
--- Added next turn resource preview
--- Added bridges and tunnels
--- Added players buildings destruct after losing
--- Rebalance building resources
+-- Added host world size
+-- Moved Resource preview to top right
+-- Can now build on sand
+-- Other players buildings no longer effect your resource preview
+-- Build menu changed a little
 
 function love.load()
     math.randomseed(os.clock())
@@ -68,7 +66,10 @@ function love.load()
 
     colorSelector = button.new({centered = true, color = {1,0,0}, font = love.graphics.newFont("fonts/baseFont.ttf", 40), x = windowWidth/2, y = windowHeight/2, text = "Color", code = 'selectedColor = selectedColor + 1 if (selectedColor > #playerColors) then selectedColor = 1 end colorSelector.color = playerColors[selectedColor] if (not (isHost)) then host:service(10) server:send(usernameButton.text..":"..selectedColor..";") end'})
 
-    startGameButton = button.new({centered = true, color = {1,0,0}, font = love.graphics.newFont("fonts/baseFont.ttf", 40), x = windowWidth/2, y = 44, text = "Start Game", code = 'menu = "game" event = host:service(100) for i = 1, #players do players[i].event.peer:send("STARTING GAME:"..World.MapSize) end'})
+    startGameButton = button.new({centered = true, color = {1,0,0}, font = love.graphics.newFont("fonts/baseFont.ttf", 40), x = windowWidth/2, y = 44, text = "Start Game", code = 'startGameButtonPressed()'})
+
+    worldSizeInput = button.new({centered = true, color = {1,1,1}, font = love.graphics.newFont("fonts/baseFont.ttf", 40), x = windowWidth/2, y = (windowHeight/2)-70, text = "World Size", code = 'selectedInput = worldSizeInput selectedInput.text = "" selectedInput:recenter()'})
+    
 
     gameLost = false
 
@@ -79,44 +80,16 @@ function love.load()
     initBuildingTypes()
 end
 
-function love.resize()
+function love.update(dt)
+    mouseX, mouseY = love.mouse.getPosition()
     windowWidth, windowHeight = love.graphics.getDimensions()
-
-    titleLabel.x = (windowWidth/2)
-    titleLabel.y = 50
-    titleLabel:windowResize()
-    hostButton.y = (windowHeight/2)-44
-    joinButton.y = (windowHeight/2)+44
-
-    startGameButton.x = windowWidth/2
-    startGameButton.y = 44
-    startGameButton:windowResize()
+    if (not (selectedInput == 0)) then
+        selectedInput:recenter()
+    end
 
     colorSelector.x = windowWidth/2
     colorSelector.y = windowHeight/2
     colorSelector:windowResize()
-
-    usernameButton.x = windowWidth/2
-    usernameButton.y = (windowHeight/2)-70
-    usernameButton:windowResize()
-    inputButton.x = windowWidth/2
-    inputButton.y = windowHeight/2
-    inputButton:windowResize()
-    joinGameButton.x = windowWidth/2
-    joinGameButton.y = (windowHeight/2)+70
-    joinGameButton:windowResize()
-
-
-    if (menu == "game") then
-        BuildMenu.width = font:getWidth("building type Cost: 000 \nEnergy Consumption: 000 \nResource Consumption: 000 \nEnergy Production: 000 \nResource Production: 000")
-        BuildMenu.height = windowHeight
-        BuildMenu.x = windowWidth-(BuildMenu.width)
-        BuildMenu.y = 0
-    end
-end
-
-function love.update(dt)
-    mouseX, mouseY = love.mouse.getPosition()
 
     if (menu == "main") then
         if (menuInit == false) then
@@ -127,21 +100,32 @@ function love.update(dt)
             menuInit = true
         end
 
+        titleLabel.x = (windowWidth/2)
+        titleLabel.y = 50
+        titleLabel:windowResize()
+
+        hostButton.y = (windowHeight/2)-44
         hostButton:update(dt)
+
+        joinButton.y = (windowHeight/2)+44
         joinButton:update(dt)
+
         World:update(dt)
     elseif (menu == "host") then
         colorSelector:update(dt)
         if onlineGame == false then
-            initGame(25)
             host = enet.host_create("*:"..gamePort)
             onlineGame = true
             isHost = true
             players = {}
-            
-            RandPlace = randCityLocation()
-            World.tiles[RandPlace.y][RandPlace.x].data.building = building.new({type = "city", x = RandPlace.x, y = RandPlace.y, world = World})
-            World.tiles[RandPlace.y][RandPlace.x].data.building.base = true
+        end
+
+        worldSizeInput.x = windowWidth/2
+        worldSizeInput.y = (windowHeight/2)-70
+        worldSizeInput:windowResize()
+        worldSizeInput:update(dt)
+        if (worldSizeInput == selectedInput) and (not tonumber(worldSizeInput.text)) then
+            worldSizeInput.text = ""
         end
 
         event = host:service(10)
@@ -157,25 +141,32 @@ function love.update(dt)
                 players[#players].done = false
                 players[#players].team = #players
 
-                RandPlace = randCityLocation()
-                World.tiles[RandPlace.y][RandPlace.x].data.building = building.new({type = "city", x = RandPlace.x, y = RandPlace.y, world = World})
-                World.tiles[RandPlace.y][RandPlace.x].data.building.team = players[#players].team
-                World.tiles[RandPlace.y][RandPlace.x].data.building.base = true
-                players[#players].basex = RandPlace.x
-                players[#players].basey = RandPlace.y
-
             elseif event.type == "disconnect" then
                 print(event.peer, "disconnected.")
                 removeDisconnectedPlayer(event)
             end
         end
         
+        startGameButton.x = windowWidth/2
+        startGameButton.y = 44
+        startGameButton:windowResize()
         startGameButton:update(dt)
 
     elseif (menu == "join") then
         if (canJoinGame == false) then
+            usernameButton.x = windowWidth/2
+            usernameButton.y = (windowHeight/2)-70
+            usernameButton:windowResize()
             usernameButton:update(dt)
+
+            inputButton.x = windowWidth/2
+            inputButton.y = windowHeight/2
+            inputButton:windowResize()
             inputButton:update(dt)
+
+            joinGameButton.x = windowWidth/2
+            joinGameButton.y = (windowHeight/2)+70
+            joinGameButton:windowResize()
             joinGameButton:update(dt)
         else
             colorSelector:update(dt)
@@ -310,6 +301,7 @@ function love.draw()
         hostButton:draw()
         joinButton:draw()
     elseif (menu == "host") then
+        worldSizeInput:draw()
         startGameButton:draw()
         if onlineGame == true then
             for i = 1, #players do
@@ -350,8 +342,8 @@ function love.draw()
             NextPhase:draw()
             BuildMenu:draw()
 
-            resourceLabel.x = 0
-            resourceLabel.y = windowHeight-font:getHeight()
+            resourceLabel.x = 5
+            resourceLabel.y = 5
             resourceLabel.text = "Resources: "..Player.resources.."+"..Player.resourcesNextTurn.."  Energy: "..Player.energy.."+"..Player.energyNextTurn
             resourceLabel:windowResize()
             resourceLabel:draw()

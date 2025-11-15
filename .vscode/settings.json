@@ -6,6 +6,7 @@
         "empty-block",
         "trailing-space",
         "duplicate-set-field",
-        "undefined-field"
+        "undefined-field",
+        "unused-local"
     ]
 }

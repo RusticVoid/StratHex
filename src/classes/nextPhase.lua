@@ -5,7 +5,7 @@ function nextPhase.new()
     local self = setmetatable({}, nextPhase)
 
     self.x = 0
-    self.y = 0
+    self.y = font:getHeight()+10
     self.nextPhase = Player.currentPhase+1
     if (self.nextPhase > #Player.phases) then
         self.nextPhase = 1

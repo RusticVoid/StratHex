@@ -59,42 +59,43 @@ function building:update(dt)
         self.y = self.y - self.world.tileInnerRadius
     end
 
-
-    if (self.EnergyProduction) then
-        if (self.type == "barracks") then
-            if (self.coolDown == 1) then
-                Player.energyNextTurn = Player.energyNextTurn + self.EnergyProduction  
+    if self.team == Player.team then
+        if (self.EnergyProduction) then
+            if (self.type == "barracks") then
+                if (self.coolDown == 1) then
+                    Player.energyNextTurn = Player.energyNextTurn + self.EnergyProduction  
+                end
+            else
+                Player.energyNextTurn = Player.energyNextTurn + self.EnergyProduction
             end
-        else
-            Player.energyNextTurn = Player.energyNextTurn + self.EnergyProduction
         end
-    end
-    if (self.EnergyConsumption) then
-        if (self.type == "barracks") then
-            if (self.coolDown == 1) then
+        if (self.EnergyConsumption) then
+            if (self.type == "barracks") then
+                if (self.coolDown == 1) then
+                    Player.energyNextTurn = Player.energyNextTurn - self.EnergyConsumption
+                end
+            else
                 Player.energyNextTurn = Player.energyNextTurn - self.EnergyConsumption
             end
-        else
-            Player.energyNextTurn = Player.energyNextTurn - self.EnergyConsumption
         end
-    end
 
-    if (self.ResourceProduction) then
-        if (self.type == "barracks") then
-            if (self.coolDown == 1) then
+        if (self.ResourceProduction) then
+            if (self.type == "barracks") then
+                if (self.coolDown == 1) then
+                    Player.resourcesNextTurn = Player.resourcesNextTurn + self.ResourceProduction
+                end
+            else
                 Player.resourcesNextTurn = Player.resourcesNextTurn + self.ResourceProduction
             end
-        else
-            Player.resourcesNextTurn = Player.resourcesNextTurn + self.ResourceProduction
         end
-    end
-    if (self.ResourceConsumption) then
-        if (self.type == "barracks") then
-            if (self.coolDown == 1) then
+        if (self.ResourceConsumption) then
+            if (self.type == "barracks") then
+                if (self.coolDown == 1) then
+                    Player.resourcesNextTurn = Player.resourcesNextTurn - self.ResourceConsumption
+                end
+            else
                 Player.resourcesNextTurn = Player.resourcesNextTurn - self.ResourceConsumption
             end
-        else
-            Player.resourcesNextTurn = Player.resourcesNextTurn - self.ResourceConsumption
         end
     end
     
@@ -172,12 +173,8 @@ function building:update(dt)
                     Player.resources = Player.resources - self.ResourceConsumption
                     Player.energy = Player.energy - self.EnergyConsumption
 
-                    if (Player.resources < 0) then
+                    if (Player.resources < 0) and (Player.energy < 0) then
                         Player.resources = Player.resources + self.ResourceConsumption
-                        self.working = false
-                    end
-
-                    if (Player.energy < 0) then
                         Player.energy = Player.energy + self.EnergyConsumption
                         self.working = false
                     end

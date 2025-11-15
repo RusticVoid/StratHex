@@ -35,7 +35,7 @@ function buildMenu:update(dt)
                             if (not (self.world.tiles[y][x].data.building == 0)) then
                                 if (self.world.tiles[y][x].data.building.team == Player.team) then
                                     if (self.world.tiles[y][x].data.building.type == "city") then
-                                        if (Player.selectedTile.type == "plains") then
+                                        if ((Player.selectedTile.type == "plains") or Player.selectedTile.type == "sand") then
                                             self.canBuild = true
                                         elseif (Player.selectedTile.type == "water") then
                                             self.canChange = true
@@ -144,10 +144,17 @@ function buildMenu:draw(dt)
             if (self.canBuild == true) then
                 love.graphics.rectangle("fill", self.x, self.y, self.width, self.height)
                 for i = 1, #buildingTypes do
+                    local Info = buildingTypesData[buildingTypes[i]].name.." Cost: "..buildingTypesData[buildingTypes[i]].cost
                     love.graphics.setColor(1,0.8,0.8,0.7)
                     love.graphics.rectangle("fill", self.x+4, ((i-1)*(self.height/#buildingTypes))+2, self.width-8, (self.height/#buildingTypes)-4)
                     love.graphics.setColor(0,0,0)
-                    love.graphics.print(buildingTypes[i].." Cost: "..buildingTypesData[buildingTypes[i]].cost.."\nEnergy Consumption: "..buildingTypesData[buildingTypes[i]].EnergyConsumption.."\nResource Consumption: "..buildingTypesData[buildingTypes[i]].ResourceConsumption.."\nEnergy Production: "..buildingTypesData[buildingTypes[i]].EnergyProduction.."\nResource Production: "..buildingTypesData[buildingTypes[i]].ResourceProduction, self.x+4, ((i-1)*(self.height/#buildingTypes))+2)
+                    --love.graphics.print(buildingTypes[i].." Cost: "..buildingTypesData[buildingTypes[i]].cost.."\nEnergy Consumption: "..buildingTypesData[buildingTypes[i]].EnergyConsumption.."\nResource Consumption: "..buildingTypesData[buildingTypes[i]].ResourceConsumption.."\nEnergy Production: "..buildingTypesData[buildingTypes[i]].EnergyProduction.."\nResource Production: "..buildingTypesData[buildingTypes[i]].ResourceProduction, self.x+4, ((i-1)*(self.height/#buildingTypes))+2)
+                    if buildingTypes[i] == "barracks" then
+                        Info = Info.."\nPer-Unit Cost:".."\nEnergy: "..buildingTypesData[buildingTypes[i]].EnergyProduction-buildingTypesData[buildingTypes[i]].EnergyConsumption.."\nResource: "..buildingTypesData[buildingTypes[i]].ResourceProduction-buildingTypesData[buildingTypes[i]].ResourceConsumption
+                    else
+                        Info = Info.."\nEnergy: "..buildingTypesData[buildingTypes[i]].EnergyProduction-buildingTypesData[buildingTypes[i]].EnergyConsumption.."\nResource: "..buildingTypesData[buildingTypes[i]].ResourceProduction-buildingTypesData[buildingTypes[i]].ResourceConsumption
+                    end
+                    love.graphics.print(Info, self.x+4, ((i-1)*(self.height/#buildingTypes))+2)
                 end
             end
             if (self.canChange == true) then

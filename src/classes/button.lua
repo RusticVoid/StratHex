@@ -47,7 +47,6 @@ function button:windowResize()
         self.y = self.y-(self.height/2)
     end
 
-
     self.baseX = self.x
     self.baseY = self.y
 end

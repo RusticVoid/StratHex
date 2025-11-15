@@ -16,6 +16,31 @@ function initGame(MapSize)
     NextPhase = nextPhase.new()
 end
 
+function startGameButtonPressed()
+    menu = "game" 
+
+    if (not tonumber(worldSizeInput.text)) then
+        worldSizeInput.text = 25
+    end
+
+    initGame(tonumber(worldSizeInput.text)) 
+    RandPlace = randCityLocation()
+    World.tiles[RandPlace.y][RandPlace.x].data.building = building.new({type = "city", x = RandPlace.x, y = RandPlace.y, world = World})
+    World.tiles[RandPlace.y][RandPlace.x].data.building.base = true
+    event = host:service(100) 
+    for i = 1, #players do 
+        RandPlace = randCityLocation()
+        World.tiles[RandPlace.y][RandPlace.x].data.building = building.new({type = "city", x = RandPlace.x, y = RandPlace.y, world = World})
+        World.tiles[RandPlace.y][RandPlace.x].data.building.team = players[i].team
+        World.tiles[RandPlace.y][RandPlace.x].data.building.base = true
+        players[#players].basex = RandPlace.x
+        players[#players].basey = RandPlace.y
+    end
+    for i = 1, #players do
+        players[i].event.peer:send("STARTING GAME:"..World.MapSize)
+    end
+end
+
 function recenterToCity()
     for y = 1, World.MapSize do
         for x = 1, World.MapSize do
@@ -62,10 +87,10 @@ function initBuildingTypes()
     }
 
     buildingTypesData = {}
-    buildingTypesData["barracks"] =    {type = "barracks",    cost = 25, EnergyConsumption = 25, ResourceConsumption = 25,  EnergyProduction = 0,  ResourceProduction = 0}
-    buildingTypesData["city"] =        {type = "city",        cost = 150, EnergyConsumption = 0,  ResourceConsumption = 0,   EnergyProduction = 0,  ResourceProduction = 0}
-    buildingTypesData["power plant"] = {type = "power plant", cost = 15, EnergyConsumption = 0,  ResourceConsumption = 5,  EnergyProduction = 10, ResourceProduction = 0}
-    buildingTypesData["mine"] =        {type = "mine",        cost = 10,  EnergyConsumption = 5, ResourceConsumption = 0,   EnergyProduction = 0,  ResourceProduction = 10}
+    buildingTypesData["barracks"] =    {name = "Barracks",    cost = 25, EnergyConsumption = 25, ResourceConsumption = 25,  EnergyProduction = 0,  ResourceProduction = 0}
+    buildingTypesData["city"] =        {name = "City",        cost = 150, EnergyConsumption = 0,  ResourceConsumption = 0,   EnergyProduction = 0,  ResourceProduction = 0}
+    buildingTypesData["power plant"] = {name = "Power Plant", cost = 15, EnergyConsumption = 0,  ResourceConsumption = 5,  EnergyProduction = 10, ResourceProduction = 0}
+    buildingTypesData["mine"] =        {name = "Mine",        cost = 10,  EnergyConsumption = 5, ResourceConsumption = 0,   EnergyProduction = 0,  ResourceProduction = 10}
 
     terraformTypes = {
         "bridge",
