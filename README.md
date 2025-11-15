@@ -9,8 +9,6 @@ You grow and expand your city while keeping up with your energy and resources. Y
 - [ ] Better Terrain Gen
 - [ ] Revamp building and the build menu
 
-I do plan on adding more to this game but right now I don't really have many ideas.
-
 ## How to run
 download the code and unzip it.
 
