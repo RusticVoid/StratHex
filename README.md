@@ -4,15 +4,9 @@ StratHex is a multiplayer turn-based strategy game with hexagons.
 You grow and expand your city while keeping up with your energy and resources. Your goal is to grow your army and attack other players' cities.
 
 ## Roadmap
-- [X] Better UI
 - [ ] Settings
-- [ ] Building resource balancing
 - [ ] Enemy building destruction
-- [ ] When player loses, all of that players buildings get destroyed
-- [ ] Map Generation
-  - [X] More then 4 player support on maps
-  - [X] Terrian (water, mountains, plains)
-  - [ ] Smarter Terrain Gen
+- [ ] Better Terrain Gen
 
 I do plan on adding more to this game but right now I don't really have many ideas.
 
