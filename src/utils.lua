@@ -58,13 +58,17 @@ function recenterToCity()
 end
 
 function randCityLocation()
-    while true do
+    for i = 1, 100 do
         local x = math.random(2, World.MapSize-2)
         local y = math.random(2, World.MapSize-2)
-        if (World.tiles[y][x].type == "plains") then
-            return { x = x, y = y }
+        if ((World.tiles[y][x].type == "plains") or (World.tiles[y][x].type == "sand")) then
+            if (World.tiles[y][x].building == 0) then
+                return { x = x, y = y }
+            end
         end
     end
+    World.tiles[y][x].type = "plains"
+    return { x = x, y = y }
 end
 
 function initTileTypes()

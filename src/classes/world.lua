@@ -11,7 +11,7 @@ function world.new(settings)
 
     self.x = 0
     self.y = 0
-
+    
     self.tiles = {}
     for y = 1, self.MapSize do
         self.tiles[y] = {}

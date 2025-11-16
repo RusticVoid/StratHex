@@ -18,6 +18,9 @@ enet = require "enet"
 -- Other players buildings no longer effect your resource preview
 -- Build menu changed a little
 
+-- Fix possible bug when player loses
+-- Currently working on build menu 2
+
 function love.load()
     math.randomseed(os.clock())
 
