@@ -16,3 +16,7 @@ function buildMenu2.new(settings)
 
     return self
 end
+
+function buildMenu2:update(dt)
+    
+end
