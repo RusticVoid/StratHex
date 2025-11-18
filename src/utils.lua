@@ -67,6 +67,8 @@ function randCityLocation()
             end
         end
     end
+    local x = math.random(2, World.MapSize-2)
+    local y = math.random(2, World.MapSize-2)
     World.tiles[y][x].type = "plains"
     return { x = x, y = y }
 end
