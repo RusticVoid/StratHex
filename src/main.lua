@@ -19,7 +19,7 @@ enet = require "enet"
 -- Build menu changed a little
 
 -- Fix possible bug when player loses
--- Currently working on build menu 2
+-- Currently working on revamping build menu
 
 function love.load()
     math.randomseed(os.clock())
