@@ -7,7 +7,7 @@ You grow and expand your city while keeping up with your energy and resources. Y
 - [ ] Settings
 - [ ] Enemy building destruction
 - [ ] Better Terrain Gen
-- [ ] Revamp building and the build menu (Currently working on BuildMenu 2.0 from the ground up)
+- [ ] Revamp building and the build menu
 
 ## How to run
 download the code and unzip it.
