@@ -17,7 +17,7 @@ function initGame(MapSize)
 end
 
 function startGameButtonPressed()
-    menu = "game" 
+    menu = "game"
 
     if (not tonumber(worldSizeInput.text)) then
         worldSizeInput.text = 25

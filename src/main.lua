@@ -12,13 +12,7 @@ require "classes.label"
 enet = require "enet"
 
 -- Notes
--- Added host world size
--- Moved Resource preview to top right
--- Can now build on sand
--- Other players buildings no longer effect your resource preview
--- Build menu changed a little
 
--- Fix possible bug when player loses
 -- Currently working on revamping build menu
 
 function love.load()
