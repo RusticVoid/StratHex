@@ -71,7 +71,6 @@ function randCityLocation()
         local y = math.random(2, World.MapSize-2)
         if ((World.tiles[y][x].type == "plains") or (World.tiles[y][x].type == "sand")) then
             if (World.tiles[y][x].building == 0) then
-                print(World.tiles[y][x].type)
                 return { x = x, y = y }
             end
         end
