@@ -70,10 +70,10 @@ function world:update(dt)
                 if (self.tiles[y][x].height > 0.15) then
                     self.tiles[y][x].type = "sand"
                 end
-                if (self.tiles[y][x].height > 0.35) then
+                if (self.tiles[y][x].height > 0.30) then
                     self.tiles[y][x].type = "plains"
                 end
-                if (self.tiles[y][x].height > 0.9) then
+                if (self.tiles[y][x].height > 0.95) then
                     self.tiles[y][x].type = "mountain"
                 end
             end
