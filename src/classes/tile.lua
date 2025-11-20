@@ -10,6 +10,7 @@ function tile.new(settings)
     self.girdY = settings.y
 
     self.world = settings.world
+    self.height = settings.height
 
     self.x = self.girdX*((self.world.tileRadius/1.34)*self.world.tileSpacing) - self.world.tileRadius/2
     self.y = self.girdY*((self.world.tileInnerRadius)*self.world.tileSpacing)

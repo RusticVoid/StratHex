@@ -9,81 +9,106 @@ function world.new(settings)
     self.tileSpacing = settings.tileSpacing
     self.MapSize = settings.MapSize
 
+    self.loading = false
+    self.loaded = false
+
     self.x = 0
     self.y = 0
-    
-    self.tiles = {}
-    for y = 1, self.MapSize do
-        self.tiles[y] = {}
-        for x = 1, self.MapSize do
-            self.tiles[y][x] = tile.new({x = x, y = y, world = self, type = "plains"})
-            if (math.random(1, 10) == 1) then
-                if (math.random(1, 2) == 1) then
-                    self.tiles[y][x].type = "mountain"
-                else
-                    --self.tiles[y][x].type = "water"
-                end
-            end
-        end
-    end
-
-    riverAmount = 10
-    for i = 0, riverAmount do
-        local riverLength = 10
-        local riverX = math.random(1, self.MapSize)*((self.tileRadius/1.34)*self.tileSpacing) - self.tileRadius/2
-        local riverY = math.random(1, self.MapSize)*((self.tileInnerRadius)*self.tileSpacing)
-        local dx = math.random(-1, 1)
-        local dy = math.random(-1, 1)
-        for i = 1, riverLength do
-            local riverSize = math.random(3, 10)/10
-            if (math.random (1, 15) == 1) then
-                dx = math.random(-1, 1)
-                dy = math.random(-1, 1)
-            end
-            riverX = riverX + (dx*50)
-            riverY = riverY + (dy*50)
-            for y = 1, self.MapSize do
-                for x = 1, self.MapSize do
-                    if (getDistance(self.tiles[y][x].x, self.tiles[y][x].y, riverX, riverY) < riverSize*(self.tileRadius*self.tileSpacing)) then
-                        self.tiles[y][x].type = "water"
-                    end
-                end
-            end
-        end
-    end
-
-    for iy = 1, self.MapSize do
-        for ix = 1, self.MapSize do
-            for y = 1, self.MapSize do
-                for x = 1, self.MapSize do
-                    if (getDistance(self.tiles[y][x].x, self.tiles[y][x].y, self.tiles[iy][ix].x, self.tiles[iy][ix].y) < 1*(self.tileRadius*self.tileSpacing)) then
-                        if (self.tiles[iy][ix].type == "water") then
-                            if (self.tiles[y][x].type == "plains") then
-                                self.tiles[y][x].type = "sand"
-                            end
-                        end
-                    end
-                end
-            end
-        end
-    end
-    
 
     return self
 end
 
+function world:smooth(smoothIteration)
+    for i = 0, smoothIteration do
+        self.changedTiles = self.tiles
+        for xi = 1, self.MapSize do
+            for yi = 1, self.MapSize do
+                local totalHex = 0
+                local totalHeight = 0
+                for x = 1, self.MapSize do
+                    for y = 1, self.MapSize do
+                        if (getDistance(self.changedTiles[y][x].x, self.changedTiles[y][x].y, self.changedTiles[yi][xi].x, self.changedTiles[yi][xi].y) < 1*(self.tileRadius*self.tileSpacing)) then
+                            if (not (self.changedTiles[y][x] == self.changedTiles[yi][xi])) then
+                                totalHeight = totalHeight + self.changedTiles[y][x].height
+                                totalHex = totalHex + 1
+                            end
+                        end
+                    end
+                end
+                self.tiles[yi][xi].height = totalHeight/totalHex
+            end
+        end
+    end
+end
+
 function world:update(dt)
-    for y = 1, self.MapSize do
-        for x = 1, self.MapSize do
-            self.tiles[y][x]:update(dt)
+    if ((self.loading == true) and (self.loaded == false)) then
+        self.tiles = {}
+        for y = 1, self.MapSize do
+            self.tiles[y] = {}
+            for x = 1, self.MapSize do
+                self.tiles[y][x] = tile.new({x = x, height = math.random(0, 1), y = y, world = self, type = "water"})
+            end
+        end
+
+        self:smooth(10)
+
+        for y = 1, self.MapSize do
+            for x = 1, self.MapSize do
+                if self.tiles[x][y].height > 0.5 then
+                    self.tiles[x][y].height = 1
+                else
+                    self.tiles[x][y].height = 0
+                end
+            end
+        end
+
+        self:smooth(10)
+
+        for y = 1, self.MapSize do
+            for x = 1, self.MapSize do
+                if (self.tiles[y][x].height > 0.35) then
+                    self.tiles[y][x].type = "sand"
+                end
+                if (self.tiles[y][x].height > 0.5) then
+                    self.tiles[y][x].type = "plains"
+                end
+                if (self.tiles[y][x].height > 0.9) then
+                    self.tiles[y][x].type = "mountain"
+                end
+            end
+        end
+
+        self.loaded = true
+        self.loading = false
+        for y = 1, self.MapSize do
+            for x = 1, self.MapSize do
+                self.tiles[x][y].building = 0
+            end
+        end
+    end
+
+    if (self.loaded == true) then
+        for y = 1, self.MapSize do
+            for x = 1, self.MapSize do
+                self.tiles[y][x]:update(dt)
+            end
         end
     end
 end
 
 function world:draw()
-    for y = 1, self.MapSize do
-        for x = 1, self.MapSize do
-            self.tiles[y][x]:draw()
+    if ((self.loading == false) and (self.loaded == false)) then
+        love.graphics.setColor(1,1,1)
+        self.loading = true
+        love.graphics.print("LOADING TERREAIN")
+    end
+
+    if (self.loaded == true) then
+        for y = 1, self.MapSize do
+            for x = 1, self.MapSize do
+                self.tiles[y][x]:draw()
+            end
         end
     end
 end

@@ -17,27 +17,35 @@ function initGame(MapSize)
 end
 
 function startGameButtonPressed()
-    menu = "game"
+    if (startedGame == false) then
+        startedGame = true
 
-    if (not tonumber(worldSizeInput.text)) then
-        worldSizeInput.text = 25
+        if (not tonumber(worldSizeInput.text)) then
+            worldSizeInput.text = 25
+        end
+
+        initGame(tonumber(worldSizeInput.text))
     end
+    
+    World:update(dt)
 
-    initGame(tonumber(worldSizeInput.text)) 
-    RandPlace = randCityLocation()
-    World.tiles[RandPlace.y][RandPlace.x].data.building = building.new({type = "city", x = RandPlace.x, y = RandPlace.y, world = World})
-    World.tiles[RandPlace.y][RandPlace.x].data.building.base = true
-    event = host:service(100) 
-    for i = 1, #players do 
+    if ((World.loaded == true) and (World.loading == false)) then
+        menu = "game"
         RandPlace = randCityLocation()
         World.tiles[RandPlace.y][RandPlace.x].data.building = building.new({type = "city", x = RandPlace.x, y = RandPlace.y, world = World})
-        World.tiles[RandPlace.y][RandPlace.x].data.building.team = players[i].team
         World.tiles[RandPlace.y][RandPlace.x].data.building.base = true
-        players[#players].basex = RandPlace.x
-        players[#players].basey = RandPlace.y
-    end
-    for i = 1, #players do
-        players[i].event.peer:send("STARTING GAME:"..World.MapSize)
+        event = host:service(100) 
+        for i = 1, #players do 
+            RandPlace = randCityLocation()
+            World.tiles[RandPlace.y][RandPlace.x].data.building = building.new({type = "city", x = RandPlace.x, y = RandPlace.y, world = World})
+            World.tiles[RandPlace.y][RandPlace.x].data.building.team = players[i].team
+            World.tiles[RandPlace.y][RandPlace.x].data.building.base = true
+            players[#players].basex = RandPlace.x
+            players[#players].basey = RandPlace.y
+        end
+        for i = 1, #players do
+            players[i].event.peer:send("STARTING GAME:"..World.MapSize)
+        end
     end
 end
 
@@ -63,6 +71,7 @@ function randCityLocation()
         local y = math.random(2, World.MapSize-2)
         if ((World.tiles[y][x].type == "plains") or (World.tiles[y][x].type == "sand")) then
             if (World.tiles[y][x].building == 0) then
+                print(World.tiles[y][x].type)
                 return { x = x, y = y }
             end
         end
@@ -118,6 +127,24 @@ function removeDisconnectedPlayer(event)
             removePlayers[#removePlayers + 1] = i
         end
     end
+
+    if menu == "game" then
+        for i = 1, #removePlayers do
+            for y = 1, World.MapSize do
+                for x = 1, World.MapSize do
+                    if not (World.tiles[y][x].data.building == 0) then
+                        if (World.tiles[y][x].data.building.team == players[removePlayers[i]].team) then
+                            World.tiles[y][x].data.building = 0
+                        end
+                    end
+                end
+            end
+        end
+        for i = 1, #players do
+            sendWorld(players[i].event)
+        end
+    end
+    
     for i = 1, #removePlayers do
         table.remove(players, removePlayers[i])
     end

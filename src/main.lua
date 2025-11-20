@@ -66,9 +66,10 @@ function love.load()
     startGameButton = button.new({centered = true, color = {1,0,0}, font = love.graphics.newFont("fonts/baseFont.ttf", 40), x = windowWidth/2, y = 44, text = "Start Game", code = 'startGameButtonPressed()'})
 
     worldSizeInput = button.new({centered = true, color = {1,1,1}, font = love.graphics.newFont("fonts/baseFont.ttf", 40), x = windowWidth/2, y = (windowHeight/2)-70, text = "World Size", code = 'selectedInput = worldSizeInput selectedInput.text = "" selectedInput:recenter()'})
-    
 
     gameLost = false
+
+    startedGame = false
 
     recenteredAtCity = false
 
@@ -142,6 +143,10 @@ function love.update(dt)
                 print(event.peer, "disconnected.")
                 removeDisconnectedPlayer(event)
             end
+        end
+
+        if (startedGame == true) then
+            startGameButtonPressed()
         end
         
         startGameButton.x = windowWidth/2
@@ -298,25 +303,29 @@ function love.draw()
         hostButton:draw()
         joinButton:draw()
     elseif (menu == "host") then
-        worldSizeInput:draw()
-        startGameButton:draw()
-        if onlineGame == true then
-            for i = 1, #players do
-                love.graphics.setFont(font)
-                if (players[i].name == 0) then
-                    love.graphics.setColor(1,0,0)
-                    love.graphics.rectangle("fill", 0, (i-1)*font:getHeight(), font:getWidth("No Name"), font:getHeight(), 5)
-                    love.graphics.setColor(1,1,1)
-                    love.graphics.print("No Name", 0, (i-1)*font:getHeight())
-                else
-                    love.graphics.setColor(playerColors[players[i].color])
-                    love.graphics.rectangle("fill", 0, (i-1)*font:getHeight(), font:getWidth(players[i].name), font:getHeight(), 5)
-                    love.graphics.setColor(0,0,0)
-                    love.graphics.print(players[i].name, 0, (i-1)*font:getHeight())
+        if startedGame == true then
+            World:draw();
+        else
+            worldSizeInput:draw()
+            startGameButton:draw()
+            if onlineGame == true then
+                for i = 1, #players do
+                    love.graphics.setFont(font)
+                    if (players[i].name == 0) then
+                        love.graphics.setColor(1,0,0)
+                        love.graphics.rectangle("fill", 0, (i-1)*font:getHeight(), font:getWidth("No Name"), font:getHeight(), 5)
+                        love.graphics.setColor(1,1,1)
+                        love.graphics.print("No Name", 0, (i-1)*font:getHeight())
+                    else
+                        love.graphics.setColor(playerColors[players[i].color])
+                        love.graphics.rectangle("fill", 0, (i-1)*font:getHeight(), font:getWidth(players[i].name), font:getHeight(), 5)
+                        love.graphics.setColor(0,0,0)
+                        love.graphics.print(players[i].name, 0, (i-1)*font:getHeight())
+                    end
                 end
             end
+            colorSelector:draw()
         end
-        colorSelector:draw()
     elseif (menu == "join") then
         if (canJoinGame == false) then
             usernameButton:draw()
