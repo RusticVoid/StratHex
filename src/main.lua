@@ -11,10 +11,6 @@ require "classes.label"
 
 enet = require "enet"
 
--- Notes
-
--- Currently working on revamping build menu
-
 function love.load()
     math.randomseed(os.clock())
 
