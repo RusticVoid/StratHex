@@ -6,7 +6,6 @@ You grow and expand your city while keeping up with your energy and resources. Y
 ## Roadmap
 - [ ] Settings
 - [ ] Enemy building destruction
-- [ ] Better Terrain Gen
 - [ ] Revamp building and the build menu
 
 ## How to run
