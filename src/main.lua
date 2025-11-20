@@ -11,6 +11,9 @@ require "classes.label"
 
 enet = require "enet"
 
+-- Notes
+-- Slight terrain fix
+
 function love.load()
     math.randomseed(os.clock())
 
