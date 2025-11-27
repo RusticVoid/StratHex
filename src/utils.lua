@@ -101,10 +101,10 @@ function initBuildingTypes()
     }
 
     buildingTypesData = {}
-    buildingTypesData["barracks"] =    {name = "Barracks",    cost = 25, EnergyConsumption = 25, ResourceConsumption = 25,  EnergyProduction = 0,  ResourceProduction = 0}
-    buildingTypesData["city"] =        {name = "City",        cost = 150, EnergyConsumption = 0,  ResourceConsumption = 0,   EnergyProduction = 0,  ResourceProduction = 0}
-    buildingTypesData["power plant"] = {name = "Power Plant", cost = 15, EnergyConsumption = 0,  ResourceConsumption = 5,  EnergyProduction = 10, ResourceProduction = 0}
-    buildingTypesData["mine"] =        {name = "Mine",        cost = 10,  EnergyConsumption = 5, ResourceConsumption = 0,   EnergyProduction = 0,  ResourceProduction = 10}
+    buildingTypesData["barracks"]     = {name = "Barracks",   cost = 25,  energy = -25, resource = -25, display = "Per-Unit Cost:\nResource: -25\nEnergy: -25"}
+    buildingTypesData["city"]         = {name = "City",       cost = 150, energy = 0, resource = 0}
+    buildingTypesData["power plant"]  = {name = "Power Plant",cost = 15,  energy = 10, resource = -5} 
+    buildingTypesData["mine"]         = {name = "Mine",       cost = 10,  energy = -5, resource = 10}
 
     terraformTypes = {
         "bridge",

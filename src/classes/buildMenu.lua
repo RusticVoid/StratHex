@@ -144,17 +144,26 @@ function buildMenu:draw(dt)
             if (self.canBuild == true) then
                 love.graphics.rectangle("fill", self.x, self.y, self.width, self.height)
                 for i = 1, #buildingTypes do
-                    local Info = buildingTypesData[buildingTypes[i]].name.." Cost: "..buildingTypesData[buildingTypes[i]].cost
+                    local basicInfo = buildingTypesData[buildingTypes[i]].name.." Cost: "..buildingTypesData[buildingTypes[i]].cost
                     love.graphics.setColor(1,0.8,0.8,0.7)
                     love.graphics.rectangle("fill", self.x+4, ((i-1)*(self.height/#buildingTypes))+2, self.width-8, (self.height/#buildingTypes)-4)
                     love.graphics.setColor(0,0,0)
-                    --love.graphics.print(buildingTypes[i].." Cost: "..buildingTypesData[buildingTypes[i]].cost.."\nEnergy Consumption: "..buildingTypesData[buildingTypes[i]].EnergyConsumption.."\nResource Consumption: "..buildingTypesData[buildingTypes[i]].ResourceConsumption.."\nEnergy Production: "..buildingTypesData[buildingTypes[i]].EnergyProduction.."\nResource Production: "..buildingTypesData[buildingTypes[i]].ResourceProduction, self.x+4, ((i-1)*(self.height/#buildingTypes))+2)
-                    if buildingTypes[i] == "barracks" then
-                        Info = Info.."\nPer-Unit Cost:".."\nEnergy: "..buildingTypesData[buildingTypes[i]].EnergyProduction-buildingTypesData[buildingTypes[i]].EnergyConsumption.."\nResource: "..buildingTypesData[buildingTypes[i]].ResourceProduction-buildingTypesData[buildingTypes[i]].ResourceConsumption
-                    else
-                        Info = Info.."\nEnergy: "..buildingTypesData[buildingTypes[i]].EnergyProduction-buildingTypesData[buildingTypes[i]].EnergyConsumption.."\nResource: "..buildingTypesData[buildingTypes[i]].ResourceProduction-buildingTypesData[buildingTypes[i]].ResourceConsumption
+                    love.graphics.print(basicInfo, self.x+4, ((i-1)*(self.height/#buildingTypes))+2)
+                end
+                for i = 1, #buildingTypes do
+                    if isMouseOver(self.x+4, ((i-1)*(self.height/#buildingTypes))+2, self.width-8, (self.height/#buildingTypes)-4) then
+                        local Info = ""
+                        if (not (buildingTypesData[buildingTypes[i]].display == nil)) then
+                            Info = buildingTypesData[buildingTypes[i]].display
+                        else
+                            Info = "Resource: "..buildingTypesData[buildingTypes[i]].resource.."\nEnergy: "..buildingTypesData[buildingTypes[i]].energy
+                        end
+                        love.graphics.setColor(0.5,0.5,0.5)
+                        local _ingore, lineCount = Info:gsub("\n", "\n")
+                        love.graphics.rectangle("fill", mouseX+10, mouseY+10, font:getWidth(Info)+20, font:getHeight()*(lineCount+1)+10, 10)
+                        love.graphics.setColor(0,0,0)
+                        love.graphics.print(Info, mouseX+15, mouseY+15)
                     end
-                    love.graphics.print(Info, self.x+4, ((i-1)*(self.height/#buildingTypes))+2)
                 end
             end
             if (self.canChange == true) then

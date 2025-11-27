@@ -24,7 +24,6 @@ function building.new(settings)
     end
 
     if (self.type == "barracks") then
-        self.produced = false
         self.coolDown = 0
         self.maxCoolDown = 3
         self.coolDownDone = false
@@ -34,19 +33,9 @@ function building.new(settings)
         self.working = true
     end
 
-    if (self.type == "power plant") then
-        self.ResourceConsumption = buildingTypesData[self.type].ResourceConsumption
-        self.EnergyProduction = buildingTypesData[self.type].EnergyProduction
-        self.produced = false
-        self.working = true
-    end
-
-    if (self.type == "mine") then
-        self.EnergyConsumption = buildingTypesData[self.type].EnergyConsumption
-        self.ResourceProduction = buildingTypesData[self.type].ResourceProduction
-        self.produced = false
-        self.working = true
-    end
+    self.energy = buildingTypesData[self.type].energy
+    self.resource = buildingTypesData[self.type].resource
+    self.produced = false
 
 
     return self
@@ -60,41 +49,23 @@ function building:update(dt)
     end
 
     if self.team == Player.team then
-        if (self.EnergyProduction) then
+        if (self.energy) then
             if (self.type == "barracks") then
                 if (self.coolDown == 1) then
-                    Player.energyNextTurn = Player.energyNextTurn + self.EnergyProduction  
+                    Player.energyNextTurn = Player.energyNextTurn + self.energy  
                 end
             else
-                Player.energyNextTurn = Player.energyNextTurn + self.EnergyProduction
-            end
-        end
-        if (self.EnergyConsumption) then
-            if (self.type == "barracks") then
-                if (self.coolDown == 1) then
-                    Player.energyNextTurn = Player.energyNextTurn - self.EnergyConsumption
-                end
-            else
-                Player.energyNextTurn = Player.energyNextTurn - self.EnergyConsumption
+                Player.energyNextTurn = Player.energyNextTurn + self.energy
             end
         end
 
-        if (self.ResourceProduction) then
+        if (self.resource) then
             if (self.type == "barracks") then
                 if (self.coolDown == 1) then
-                    Player.resourcesNextTurn = Player.resourcesNextTurn + self.ResourceProduction
+                    Player.resourcesNextTurn = Player.resourcesNextTurn + self.resource
                 end
             else
-                Player.resourcesNextTurn = Player.resourcesNextTurn + self.ResourceProduction
-            end
-        end
-        if (self.ResourceConsumption) then
-            if (self.type == "barracks") then
-                if (self.coolDown == 1) then
-                    Player.resourcesNextTurn = Player.resourcesNextTurn - self.ResourceConsumption
-                end
-            else
-                Player.resourcesNextTurn = Player.resourcesNextTurn - self.ResourceConsumption
+                Player.resourcesNextTurn = Player.resourcesNextTurn + self.resource
             end
         end
     end
@@ -111,57 +82,6 @@ function building:update(dt)
         end
     end
 
-    if (self.type == "mine") then
-        if (self.team == Player.team) then
-            if self.produced == false then
-                if (Player.phases[Player.currentPhase] == "move") then
-                    self.working = true
-                    self.produced = true
-                    Player.energy = Player.energy - self.EnergyConsumption
-
-                    if (Player.energy < 0) then
-                        Player.energy = Player.energy + self.EnergyConsumption
-                        self.working = false
-                    end
-
-                    if (self.working == true) then
-                        Player.resources = Player.resources + self.ResourceProduction
-                    end
-
-                end
-            else
-                if (Player.phases[Player.currentPhase] == "done") then
-                    self.produced = false
-                end
-            end
-        end
-    end
-
-    if (self.type == "power plant") then
-        if (self.team == Player.team) then
-            if self.produced == false then
-                if (Player.phases[Player.currentPhase] == "move") then
-                    self.working = true
-                    self.produced = true
-                    Player.resources = Player.resources - self.ResourceConsumption
-
-                    if (Player.resources < 0) then
-                        Player.resources = Player.resources + self.ResourceConsumption
-                        self.working = false
-                    end
-
-                    if (self.working == true) then
-                        Player.energy = Player.energy + self.EnergyProduction
-                    end
-                end
-            else
-                if (Player.phases[Player.currentPhase] == "done") then
-                    self.produced = false
-                end
-            end
-        end
-    end
-
     if (self.type == "barracks") then
         if (self.team == Player.team) then
             if self.produced == false then
@@ -169,17 +89,13 @@ function building:update(dt)
                     self.produced = true
                     self.coolDown = self.maxCoolDown
 
-                    self.working = true
-                    Player.resources = Player.resources - self.ResourceConsumption
-                    Player.energy = Player.energy - self.EnergyConsumption
+                    Player.resources = Player.resources - self.resource
+                    Player.energy = Player.energy - self.energy
 
                     if (Player.resources < 0) and (Player.energy < 0) then
-                        Player.resources = Player.resources + self.ResourceConsumption
-                        Player.energy = Player.energy + self.EnergyConsumption
-                        self.working = false
-                    end
-
-                    if (self.working == true) then
+                        Player.resources = Player.resources + -self.resource
+                        Player.energy = Player.energy + -self.energy
+                    else
                         if (self.world.tiles[self.girdY][self.girdX].data.unit == 0) then
                             if onlineGame == true then
                                 self.world.tiles[self.girdY][self.girdX].data.unit = unit.new({type = "basic", moveSpeed = unitTypes["basic"].moveSpeed, x = self.world.tiles[self.girdY][self.girdX].girdX, y = self.world.tiles[self.girdY][self.girdX].girdY, world = World})  
@@ -214,6 +130,25 @@ function building:update(dt)
                     end
                 elseif (Player.phases[Player.currentPhase] == "move") then
                     self.coolDownDone = false
+                end
+            end
+        end
+    else
+        if (self.team == Player.team) then
+            if self.produced == false then
+                if (Player.phases[Player.currentPhase] == "move") then
+                    self.produced = true
+                    Player.energy = Player.energy + self.energy
+                    Player.resources = Player.resources + self.resource
+
+                    if ((Player.energy < 0) or (Player.resources < 0)) then
+                        Player.resource = Player.resource + -self.resource
+                        Player.energy = Player.energy + -self.energy
+                    end
+                end
+            else
+                if (Player.phases[Player.currentPhase] == "done") then
+                    self.produced = false
                 end
             end
         end

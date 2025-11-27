@@ -13,6 +13,7 @@ enet = require "enet"
 
 -- Notes
 -- Slight terrain fix
+-- Building UI changed (hover over building to see info)
 
 function love.load()
     math.randomseed(os.clock())
@@ -356,21 +357,20 @@ function love.draw()
     end
 end
 
-function love.keypressed(key)
+
+function love.textinput(t)
+    if (not (selectedInput == 0)) then
+        selectedInput.x = windowWidth/2
+        selectedInput.text = selectedInput.text .. t
+        selectedInput:recenter()
+    end
+end
+
+function love.keypressed(key, unicode)
     if (key == "c") then
         if (menu == "game") then
             recenterToCity()
         end
-    end
-
-    if (not (selectedInput == 0)) then
-        if (key == "backspace") then
-            selectedInput.text = selectedInput.text:sub(1, -2)
-        else
-            selectedInput.x = windowWidth/2
-            selectedInput.text = selectedInput.text..key
-        end
-        selectedInput:recenter()
     end
 end
 
